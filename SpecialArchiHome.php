@@ -32,6 +32,33 @@ class SpecialArchiHome extends \SpecialPage
             '[[Archi-Wiki:À propos|Découvrir l\'association]]';
         $output->addWikiText($wikitext);
 
+        $news = $this->apiRequest(
+            array(
+                'action'=>'query',
+                'list'=>'recentchanges',
+                'rcnamespace'=>NS_NEWS,
+                'rclimit'=>1,
+                'rctype'=>'new'
+            )
+        );
+        $title = \Title::newFromText($news['query']['recentchanges'][0]['title']);
+        $extracts = $this->apiRequest(
+            array(
+                'action'=>'query',
+                'prop'=>'extracts',
+                'titles'=>$news['query']['recentchanges'][0]['title'],
+                'explaintext'=>true,
+                'exintro'=>true,
+                'exchars'=>250,
+                'exsectionformat'=>'plain'
+            )
+        );
+
+        $wikitext = '== Actualités de l\'association =='.PHP_EOL.
+            '=== '.$title->getText().' ==='.PHP_EOL.
+            $extracts['query']['pages'][$title->getArticleID()]['extract']['*'];
+        $output->addWikiText($wikitext);
+
         $output->addWikiText(
             'Recherchez parmi nos {{PAGESINNAMESPACE:'.NS_ADDRESS.'}} '.
             'adresses et {{PAGESINNAMESPACE:6}} photos&nbsp;:'
