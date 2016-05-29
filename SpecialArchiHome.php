@@ -9,13 +9,21 @@ class SpecialArchiHome extends \SpecialPage
         parent::__construct('ArchiHome');
     }
 
+    private function apiRequest($options)
+    {
+        $params = new \DerivativeRequest(
+            $this->getRequest(),
+            $options
+        );
+        $api = new \ApiMain($params);
+        $api->execute();
+        return $api->getResult()->getResultData();
+    }
+
     public function execute($par)
     {
-        $request = $this->getRequest();
         $output = $this->getOutput();
         $this->setHeaders();
-
-        $param = $request->getText('param');
 
         $output->addWikiText(
             'Recherchez parmi nos {{PAGESINNAMESPACE:'.NS_ADDRESS.'}} '.
@@ -32,8 +40,7 @@ class SpecialArchiHome extends \SpecialPage
             '== Dernières modifications =='
         );
 
-        $params = new \DerivativeRequest(
-            $request,
+        $results = $this->apiRequest(
             array(
                 'action'=>'query',
                 'list'=>'recentchanges',
@@ -42,17 +49,13 @@ class SpecialArchiHome extends \SpecialPage
                 'rctoponly'=>true
             )
         );
-        $api = new \ApiMain($params);
-        $api->execute();
-        $results = $api->getResult()->getResultData();
         $changes = array();
         foreach ($results['query']['recentchanges'] as $change) {
             if (isset($change['title'])) {
                 $title = \Title::newFromText($change['title']);
                 $id = $title->getArticleID();
 
-                $params = new \DerivativeRequest(
-                    $request,
+                $extracts = $this->apiRequest(
                     array(
                         'action'=>'query',
                         'prop'=>'extracts',
@@ -62,12 +65,8 @@ class SpecialArchiHome extends \SpecialPage
                         'exsectionformat'=>'plain'
                     )
                 );
-                $api = new \ApiMain($params);
-                $api->execute();
-                $extracts = $api->getResult()->getResultData();
 
-                $params = new \DerivativeRequest(
-                    $request,
+                $images = $this->apiRequest(
                     array(
                         'action'=>'query',
                         'prop'=>'images',
@@ -75,9 +74,6 @@ class SpecialArchiHome extends \SpecialPage
                         'imlimit'=>1
                     )
                 );
-                $api = new \ApiMain($params);
-                $api->execute();
-                $images = $api->getResult()->getResultData();
 
                 $wikitext = '=== '.preg_replace('/\(.*\)/', '', $title->getText()).' ==='.PHP_EOL;
                 if (isset($images['query']['pages'][$id]['images'])) {
