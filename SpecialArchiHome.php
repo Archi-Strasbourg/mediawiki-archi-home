@@ -25,6 +25,13 @@ class SpecialArchiHome extends \SpecialPage
         $output = $this->getOutput();
         $this->setHeaders();
 
+        $title = \Title::newFromText('MediaWiki:ArchiHome-about');
+        $revision = \Revision::newFromId($title->getLatestRevID());
+        $wikitext = '== Qui sommes-nous&nbsp;? =='.PHP_EOL.
+            $revision->getText().PHP_EOL.PHP_EOL.
+            '[[Archi-Wiki:À propos|Découvrir l\'association]]';
+        $output->addWikiText($wikitext);
+
         $output->addWikiText(
             'Recherchez parmi nos {{PAGESINNAMESPACE:'.NS_ADDRESS.'}} '.
             'adresses et {{PAGESINNAMESPACE:6}} photos&nbsp;:'
