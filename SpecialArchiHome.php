@@ -54,12 +54,26 @@ class SpecialArchiHome extends \SpecialPage
             )
         );
 
+        $images = $this->apiRequest(
+            array(
+                'action'=>'query',
+                'prop'=>'images',
+                'titles'=>$title,
+                'imlimit'=>1
+            )
+        );
+
         $wikitext = '== Actualités de l\'association =='.PHP_EOL.
-            '=== '.$title->getText().' ==='.PHP_EOL.
             '[[Special:ArchiBlog|Toutes les actualités]]'.PHP_EOL.PHP_EOL.
-            $extracts['query']['pages'][$title->getArticleID()]['extract']['*'].PHP_EOL.PHP_EOL.
+            '=== '.$title->getText().' ==='.PHP_EOL;
+        if (isset($images['query']['pages'][$title->getArticleID()]['images'])) {
+            $wikitext .= '[['.$images['query']['pages'][$title->getArticleID()]['images'][0]['title'].
+                '|thumb|left|100px]]';
+        }
+        $wikitext .= $extracts['query']['pages'][$title->getArticleID()]['extract']['*'].PHP_EOL.PHP_EOL.
             '[['.$title->getFullText().'|Lire la suite]]';
         $output->addWikiText($wikitext);
+        $output->addHTML('<div style="clear:both;"></div>');
 
         $output->addWikiText(
             'Recherchez parmi nos {{PAGESINNAMESPACE:'.NS_ADDRESS.'}} '.
