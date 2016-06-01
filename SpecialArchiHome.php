@@ -28,10 +28,12 @@ class SpecialArchiHome extends \SpecialPage
         //Qui sommes-nous ?
         $title = \Title::newFromText('MediaWiki:ArchiHome-about');
         $revision = \Revision::newFromId($title->getLatestRevID());
+	if (isset($revision)) {
         $wikitext = '== Qui sommes-nous&nbsp;? =='.PHP_EOL.
             $revision->getText().PHP_EOL.PHP_EOL.
             '[[Archi-Wiki:À propos|Découvrir l\'association]]';
         $output->addWikiText($wikitext);
+}
 
         //Actualités de l'association
         $news = $this->apiRequest(
@@ -43,6 +45,7 @@ class SpecialArchiHome extends \SpecialPage
                 'rctype'=>'new'
             )
         );
+if (isset($news['query']['recentchanges'][0])) {
         $title = \Title::newFromText($news['query']['recentchanges'][0]['title']);
         $extracts = $this->apiRequest(
             array(
@@ -76,6 +79,7 @@ class SpecialArchiHome extends \SpecialPage
             '[['.$title->getFullText().'|Lire la suite]]';
         $output->addWikiText($wikitext);
         $output->addHTML('<div style="clear:both;"></div>');
+}
 
         //Recherche
         $output->addWikiText(
@@ -93,6 +97,7 @@ class SpecialArchiHome extends \SpecialPage
         //Lumière sur
         $title = \Title::newFromText('MediaWiki:ArchiHome-focus');
         $revision = \Revision::newFromId($title->getLatestRevID());
+if (isset($revision)) {
         $title = \Title::newFromText($revision->getText());
         $wikitext = '==Lumière sur=='.PHP_EOL;
         $id = $title->getArticleID();
@@ -125,10 +130,12 @@ class SpecialArchiHome extends \SpecialPage
             '[['.$title.'|Découvrir cette fiche]]';
         $output->addWikiText($wikitext);
         $output->addHTML('<div style="clear:both;"></div>');
+}
 
         //Image à la une
         $title = \Title::newFromText('MediaWiki:ArchiHome-focus-image');
         $revision = \Revision::newFromId($title->getLatestRevID());
+if (isset($revision)) {
         $title = \Title::newFromText($revision->getText());
         $wikitext = '==Image à la une=='.PHP_EOL;
         $id = $title->getArticleID();
@@ -148,6 +155,7 @@ class SpecialArchiHome extends \SpecialPage
         $wikitext .= PHP_EOL.PHP_EOL.'[[:'.$title.'|Découvrir cette image]]';
         $output->addWikiText($wikitext);
         $output->addHTML('<div style="clear:both;"></div>');
+}
 
         //Dernières modifications
         $output->addWikiText(
