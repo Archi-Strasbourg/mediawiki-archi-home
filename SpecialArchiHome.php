@@ -77,7 +77,7 @@ class SpecialArchiHome extends \SpecialPage
             '== Dernières modifications =='
         );
 
-        $results = $this->apiRequest(
+        $addresses = $this->apiRequest(
             array(
                 'action'=>'query',
                 'list'=>'recentchanges',
@@ -86,8 +86,32 @@ class SpecialArchiHome extends \SpecialPage
                 'rctoponly'=>true
             )
         );
+        $news = $this->apiRequest(
+            array(
+                'action'=>'query',
+                'list'=>'recentchanges',
+                'rcnamespace'=>NS_ADDRESS_NEWS,
+                'rclimit'=>6,
+                'rctoponly'=>true
+            )
+        );
+        foreach ($addresses['query']['recentchanges'] as &$address) {
+            foreach ($news['query']['recentchanges'] as &$article) {
+                if (isset($address['title']) && isset($article['title'])) {
+                    $addressTitle = \Title::newFromText($address['title']);
+                    $articleTitle = \Title::newFromText($article['title']);
+                    if ($addressTitle->getText() == $articleTitle->getText()) {
+                        $addressRev = \Revision::newFromId($addressTitle->getLatestRevID());
+                        $articleRev = \Revision::newFromId($articleTitle->getLatestRevID());
+                        if ($articleRev->getTimestamp() > $addressRev->getTimestamp()) {
+                            $address = $article;
+                        }
+                    }
+                }
+            }
+        }
         $changes = array();
-        foreach ($results['query']['recentchanges'] as $change) {
+        foreach ($addresses['query']['recentchanges'] as $change) {
             if (isset($change['title'])) {
                 $title = \Title::newFromText($change['title']);
                 $id = $title->getArticleID();
