@@ -56,8 +56,7 @@ class SpecialArchiHome extends \SpecialPage
 
         $wikitext = '== Actualités de l\'association =='.PHP_EOL.
             '=== '.$title->getText().' ==='.PHP_EOL.
-            '['.\SpecialPage::getTitleFor('Toutes les pages')->getFullURL().
-            '?namespace=4004 Toutes les actualités]'.PHP_EOL.PHP_EOL.
+            '[[Special:ArchiBlog|Toutes les actualités]]'.PHP_EOL.PHP_EOL.
             $extracts['query']['pages'][$title->getArticleID()]['extract']['*'].PHP_EOL.PHP_EOL.
             '[['.$title->getFullText().'|Lire la suite]]';
         $output->addWikiText($wikitext);
