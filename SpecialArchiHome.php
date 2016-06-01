@@ -28,12 +28,12 @@ class SpecialArchiHome extends \SpecialPage
         //Qui sommes-nous ?
         $title = \Title::newFromText('MediaWiki:ArchiHome-about');
         $revision = \Revision::newFromId($title->getLatestRevID());
-	if (isset($revision)) {
-        $wikitext = '== Qui sommes-nous&nbsp;? =='.PHP_EOL.
+        if (isset($revision)) {
+            $wikitext = '== Qui sommes-nous&nbsp;? =='.PHP_EOL.
             $revision->getText().PHP_EOL.PHP_EOL.
             '[[Archi-Wiki:À propos|Découvrir l\'association]]';
-        $output->addWikiText($wikitext);
-}
+            $output->addWikiText($wikitext);
+        }
 
         //Actualités de l'association
         $news = $this->apiRequest(
@@ -45,41 +45,41 @@ class SpecialArchiHome extends \SpecialPage
                 'rctype'=>'new'
             )
         );
-if (isset($news['query']['recentchanges'][0])) {
-        $title = \Title::newFromText($news['query']['recentchanges'][0]['title']);
-        $extracts = $this->apiRequest(
-            array(
-                'action'=>'query',
-                'prop'=>'extracts',
-                'titles'=>$news['query']['recentchanges'][0]['title'],
-                'explaintext'=>true,
-                'exintro'=>true,
-                'exchars'=>250,
-                'exsectionformat'=>'plain'
-            )
-        );
+        if (isset($news['query']['recentchanges'][0])) {
+                $title = \Title::newFromText($news['query']['recentchanges'][0]['title']);
+                $extracts = $this->apiRequest(
+                    array(
+                    'action'=>'query',
+                    'prop'=>'extracts',
+                    'titles'=>$news['query']['recentchanges'][0]['title'],
+                    'explaintext'=>true,
+                    'exintro'=>true,
+                    'exchars'=>250,
+                    'exsectionformat'=>'plain'
+                    )
+                );
 
-        $images = $this->apiRequest(
-            array(
-                'action'=>'query',
-                'prop'=>'images',
-                'titles'=>$title,
-                'imlimit'=>1
-            )
-        );
+                $images = $this->apiRequest(
+                    array(
+                    'action'=>'query',
+                    'prop'=>'images',
+                    'titles'=>$title,
+                    'imlimit'=>1
+                    )
+                );
 
-        $wikitext = '== Actualités de l\'association =='.PHP_EOL.
-            '[[Special:ArchiBlog|Toutes les actualités]]'.PHP_EOL.PHP_EOL.
-            '=== '.$title->getText().' ==='.PHP_EOL;
-        if (isset($images['query']['pages'][$title->getArticleID()]['images'])) {
-            $wikitext .= '[['.$images['query']['pages'][$title->getArticleID()]['images'][0]['title'].
-                '|thumb|left|100px]]';
+                $wikitext = '== Actualités de l\'association =='.PHP_EOL.
+                    '[[Special:ArchiBlog|Toutes les actualités]]'.PHP_EOL.PHP_EOL.
+                    '=== '.$title->getText().' ==='.PHP_EOL;
+                if (isset($images['query']['pages'][$title->getArticleID()]['images'])) {
+                    $wikitext .= '[['.$images['query']['pages'][$title->getArticleID()]['images'][0]['title'].
+                    '|thumb|left|100px]]';
+                }
+                $wikitext .= $extracts['query']['pages'][$title->getArticleID()]['extract']['*'].PHP_EOL.PHP_EOL.
+                    '[['.$title->getFullText().'|Lire la suite]]';
+                $output->addWikiText($wikitext);
+                $output->addHTML('<div style="clear:both;"></div>');
         }
-        $wikitext .= $extracts['query']['pages'][$title->getArticleID()]['extract']['*'].PHP_EOL.PHP_EOL.
-            '[['.$title->getFullText().'|Lire la suite]]';
-        $output->addWikiText($wikitext);
-        $output->addHTML('<div style="clear:both;"></div>');
-}
 
         //Recherche
         $output->addWikiText(
@@ -97,65 +97,66 @@ if (isset($news['query']['recentchanges'][0])) {
         //Lumière sur
         $title = \Title::newFromText('MediaWiki:ArchiHome-focus');
         $revision = \Revision::newFromId($title->getLatestRevID());
-if (isset($revision)) {
-        $title = \Title::newFromText($revision->getText());
-        $wikitext = '==Lumière sur=='.PHP_EOL;
-        $id = $title->getArticleID();
+        if (isset($revision)) {
+                $title = \Title::newFromText($revision->getText());
+                $wikitext = '==Lumière sur=='.PHP_EOL;
+                $id = $title->getArticleID();
 
-        $extracts = $this->apiRequest(
-            array(
-                'action'=>'query',
-                'prop'=>'extracts',
-                'titles'=>$title,
-                'explaintext'=>true,
-                'exchars'=>120,
-                'exsectionformat'=>'plain'
-            )
-        );
+                $extracts = $this->apiRequest(
+                    array(
+                    'action'=>'query',
+                    'prop'=>'extracts',
+                    'titles'=>$title,
+                    'explaintext'=>true,
+                    'exchars'=>120,
+                    'exsectionformat'=>'plain'
+                    )
+                );
 
-        $images = $this->apiRequest(
-            array(
-                'action'=>'query',
-                'prop'=>'images',
-                'titles'=>$title,
-                'imlimit'=>1
-            )
-        );
+                $images = $this->apiRequest(
+                    array(
+                    'action'=>'query',
+                    'prop'=>'images',
+                    'titles'=>$title,
+                    'imlimit'=>1
+                    )
+                );
 
-        $wikitext .= '=== '.preg_replace('/\(.*\)/', '', $title->getText()).' ==='.PHP_EOL;
-        if (isset($images['query']['pages'][$id]['images'])) {
-            $wikitext .= '[['.$images['query']['pages'][$id]['images'][0]['title'].'|thumb|left|100px]]';
+                $wikitext .= '=== '.preg_replace('/\(.*\)/', '', $title->getText()).' ==='.PHP_EOL;
+                if (isset($images['query']['pages'][$id]['images'])) {
+                    $wikitext .= '[['.$images['query']['pages'][$id]['images'][0]['title'].'|thumb|left|100px]]';
+                }
+                $wikitext .= $extracts['query']['pages'][$id]['extract']['*'].PHP_EOL.PHP_EOL.
+                    '[['.$title.'|Découvrir cette fiche]]';
+                $output->addWikiText($wikitext);
+                $output->addHTML('<div style="clear:both;"></div>');
         }
-        $wikitext .= $extracts['query']['pages'][$id]['extract']['*'].PHP_EOL.PHP_EOL.
-            '[['.$title.'|Découvrir cette fiche]]';
-        $output->addWikiText($wikitext);
-        $output->addHTML('<div style="clear:both;"></div>');
-}
 
         //Image à la une
         $title = \Title::newFromText('MediaWiki:ArchiHome-focus-image');
         $revision = \Revision::newFromId($title->getLatestRevID());
-if (isset($revision)) {
-        $title = \Title::newFromText($revision->getText());
-        $wikitext = '==Image à la une=='.PHP_EOL;
-        $id = $title->getArticleID();
+        if (isset($revision)) {
+                $title = \Title::newFromText($revision->getText());
+                $wikitext = '==Image à la une=='.PHP_EOL;
+                $id = $title->getArticleID();
 
-        $images = $this->apiRequest(
-            array(
-                'action'=>'query',
-                'prop'=>'imageinfo',
-                'titles'=>$title,
-                'iiprop'=>'extmetadata'
-            )
-        );
-        $wikitext .= '[['.$title.'|thumb|left|100px]]';
-        if (isset($images['query']['pages'][$id]['imageinfo'][0]['extmetadata']['ImageDescription']['value'])) {
-            $wikitext .= $images['query']['pages'][$id]['imageinfo'][0]['extmetadata']['ImageDescription']['value'];
+                $images = $this->apiRequest(
+                    array(
+                    'action'=>'query',
+                    'prop'=>'imageinfo',
+                    'titles'=>$title,
+                    'iiprop'=>'extmetadata'
+                    )
+                );
+                $wikitext .= '[['.$title.'|thumb|left|100px]]';
+                if (isset($images['query']['pages'][$id]['imageinfo'][0]['extmetadata']['ImageDescription']['value'])) {
+                    $wikitext .=
+                        $images['query']['pages'][$id]['imageinfo'][0]['extmetadata']['ImageDescription']['value'];
+                }
+                $wikitext .= PHP_EOL.PHP_EOL.'[[:'.$title.'|Découvrir cette image]]';
+                $output->addWikiText($wikitext);
+                $output->addHTML('<div style="clear:both;"></div>');
         }
-        $wikitext .= PHP_EOL.PHP_EOL.'[[:'.$title.'|Découvrir cette image]]';
-        $output->addWikiText($wikitext);
-        $output->addHTML('<div style="clear:both;"></div>');
-}
 
         //Dernières modifications
         $output->addWikiText(
