@@ -1,0 +1,13 @@
+{
+	"name": "archi-strasboug/archi-home",
+	"description": "Custom homepage for archi-wiki.org",
+	"license": "GPL-3.0",
+	"require": {
+		"mediawiki/TextExtracts": "~1.26"
+	},
+	"repositories": [{
+		"type": "composer",
+		"url": "https://mwpackagist.netlib.re/"
+	}],
+	"type": "mediawiki-extension"
+}
