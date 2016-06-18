@@ -216,6 +216,34 @@ class SpecialArchiHome extends \SpecialPage
                 $output->addHTML('<div style="clear:both;"></div>');
             }
         }
+
+        //Derniers commentaires
+        $output->addWikiText(
+            '== Derniers commentaires =='
+        );
+
+        $dbr = wfGetDB(DB_SLAVE);
+        $res = $dbr->select(
+            array('Comments', 'page'),
+            array(
+                'Comment_Page_ID', 'page_id'
+            ),
+            array('page_id IS NOT NULL'),
+            __METHOD__,
+            array('LIMIT'=>10, 'ORDER BY'=>'Comment_Date DESC', 'GROUP BY'=>'page_id'),
+            array(
+                'page' => array(
+                    'LEFT JOIN', 'Comment_Page_ID = page_id'
+                )
+            )
+        );
+
+        foreach ($res as $row) {
+            $title = \Title::newFromId($row->Comment_Page_ID);
+            $wikitext = '=== '.preg_replace('/\(.*\)/', '', $title->getText()).' ==='.PHP_EOL;
+            $output->addWikiText($wikitext);
+            $output->addHTML('<div style="clear:both;"></div>');
+        }
     }
 
     public function getGroupName()
