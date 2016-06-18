@@ -20,17 +20,27 @@ class SpecialArchiHome extends \SpecialPage
         return $api->getResult()->getResultData();
     }
 
+    private function getTextFromArticle($title)
+    {
+        $title = \Title::newFromText($title);
+        $revision = \Revision::newFromId($title->getLatestRevID());
+        if (isset($revision)) {
+            return $revision->getText();
+        } else {
+            return null;
+        }
+    }
+
     public function execute($par)
     {
         $output = $this->getOutput();
         $this->setHeaders();
 
         //Qui sommes-nous ?
-        $title = \Title::newFromText('MediaWiki:ArchiHome-about');
-        $revision = \Revision::newFromId($title->getLatestRevID());
-        if (isset($revision)) {
+        $intro = $this->getTextFromArticle('MediaWiki:ArchiHome-about');
+        if (isset($intro)) {
             $wikitext = '== Qui sommes-nous&nbsp;? =='.PHP_EOL.
-            $revision->getText().PHP_EOL.PHP_EOL.
+            $intro.PHP_EOL.PHP_EOL.
             '[[Archi-Wiki:À propos|Découvrir l\'association]]';
             $output->addWikiText($wikitext);
         }
@@ -95,10 +105,9 @@ class SpecialArchiHome extends \SpecialPage
         );
 
         //Lumière sur
-        $title = \Title::newFromText('MediaWiki:ArchiHome-focus');
-        $revision = \Revision::newFromId($title->getLatestRevID());
-        if (isset($revision)) {
-                $title = \Title::newFromText($revision->getText());
+        $focus = $this->getTextFromArticle('MediaWiki:ArchiHome-focus');
+        if (isset($focus)) {
+                $title = \Title::newFromText($focus);
                 $wikitext = '==Lumière sur=='.PHP_EOL;
                 $id = $title->getArticleID();
 
@@ -133,10 +142,9 @@ class SpecialArchiHome extends \SpecialPage
         }
 
         //Image à la une
-        $title = \Title::newFromText('MediaWiki:ArchiHome-focus-image');
-        $revision = \Revision::newFromId($title->getLatestRevID());
-        if (isset($revision)) {
-                $title = \Title::newFromText($revision->getText());
+        $focusImage = $this->getTextFromArticle('MediaWiki:ArchiHome-focus-image');
+        if (isset($focusImage)) {
+                $title = \Title::newFromText($focusImage);
                 $wikitext = '==Image à la une=='.PHP_EOL;
                 $id = $title->getArticleID();
 
