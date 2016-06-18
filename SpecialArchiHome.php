@@ -38,8 +38,9 @@ class SpecialArchiHome extends \SpecialPage
 
         //Qui sommes-nous ?
         $intro = $this->getTextFromArticle('MediaWiki:ArchiHome-about');
+        $introTitle = $this->getTextFromArticle('MediaWiki:ArchiHome-about-title');
         if (isset($intro)) {
-            $wikitext = '== Qui sommes-nous&nbsp;? =='.PHP_EOL.
+            $wikitext = '== '.$introTitle.' =='.PHP_EOL.
             $intro.PHP_EOL.PHP_EOL.
             '[[Archi-Wiki:À propos|Découvrir l\'association]]';
             $output->addWikiText($wikitext);
