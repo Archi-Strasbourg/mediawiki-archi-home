@@ -226,11 +226,11 @@ class SpecialArchiHome extends \SpecialPage
         $res = $dbr->select(
             array('Comments', 'page'),
             array(
-                'Comment_Page_ID', 'page_id'
+                'Comment_Page_ID', 'page_id', 'Comment_Text'
             ),
             array('page_id IS NOT NULL'),
             __METHOD__,
-            array('LIMIT'=>10, 'ORDER BY'=>'Comment_Date DESC', 'GROUP BY'=>'page_id'),
+            array('LIMIT'=>10, 'ORDER BY'=>'Comment_Date DESC'),
             array(
                 'page' => array(
                     'LEFT JOIN', 'Comment_Page_ID = page_id'
@@ -240,7 +240,9 @@ class SpecialArchiHome extends \SpecialPage
 
         foreach ($res as $row) {
             $title = \Title::newFromId($row->Comment_Page_ID);
-            $wikitext = '=== '.preg_replace('/\(.*\)/', '', $title->getText()).' ==='.PHP_EOL;
+            $wikitext = '=== '.preg_replace('/\(.*\)/', '', $title->getText()).' ==='.PHP_EOL.
+                "''".strtok(wordwrap($row->Comment_Text, 170, '…'.PHP_EOL), PHP_EOL)."''".PHP_EOL.PHP_EOL.
+                '[['.$title->getFullText().'#Commentaires|Consulter le commentaire]]';
             $output->addWikiText($wikitext);
             $output->addHTML('<div style="clear:both;"></div>');
         }
