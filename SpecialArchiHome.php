@@ -142,31 +142,6 @@ class SpecialArchiHome extends \SpecialPage
                 $output->addHTML('<div style="clear:both;"></div>');
         }
 
-        //Image à la une
-        $focusImage = $this->getTextFromArticle('MediaWiki:ArchiHome-focus-image');
-        if (isset($focusImage)) {
-                $title = \Title::newFromText($focusImage);
-                $wikitext = '==Image à la une=='.PHP_EOL;
-                $id = $title->getArticleID();
-
-                $images = $this->apiRequest(
-                    array(
-                    'action'=>'query',
-                    'prop'=>'imageinfo',
-                    'titles'=>$title,
-                    'iiprop'=>'extmetadata'
-                    )
-                );
-                $wikitext .= '[['.$title.'|thumb|left|100px]]';
-                if (isset($images['query']['pages'][$id]['imageinfo'][0]['extmetadata']['ImageDescription']['value'])) {
-                    $wikitext .=
-                        $images['query']['pages'][$id]['imageinfo'][0]['extmetadata']['ImageDescription']['value'];
-                }
-                $wikitext .= PHP_EOL.PHP_EOL.'[[:'.$title.'|Découvrir cette image]]';
-                $output->addWikiText($wikitext);
-                $output->addHTML('<div style="clear:both;"></div>');
-        }
-
         //Dernières modifications
         $output->addWikiText(
             '== Dernières modifications =='
