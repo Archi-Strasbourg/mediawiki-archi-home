@@ -261,6 +261,7 @@ class SpecialArchiHome extends \SpecialPage
                 $output->addHTML('<div style="clear:both;"></div>');
             }
         }
+        $output->addWikiText('[[Special:Modifications récentes|Toutes les dernières modifications]]');
 
         //Derniers commentaires
         $output->addWikiText(
@@ -291,6 +292,8 @@ class SpecialArchiHome extends \SpecialPage
             $output->addWikiText($wikitext);
             $output->addHTML('<div style="clear:both;"></div>');
         }
+
+        $output->addWikiText('[[Special:ArchiComments|Tous les derniers commentaires]]');
     }
 
     public function getGroupName()
