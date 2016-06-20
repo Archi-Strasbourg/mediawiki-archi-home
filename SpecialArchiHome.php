@@ -279,7 +279,7 @@ class SpecialArchiHome extends \SpecialPage
             WHERE (page_id IS NOT NULL)
             GROUP BY Comment_Page_ID
             ORDER BY Comment_Date DESC
-            LIMIT 10;'
+            LIMIT 5;'
         );
 
         foreach ($res as $row) {
