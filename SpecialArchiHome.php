@@ -31,22 +31,22 @@ class SpecialArchiHome extends \SpecialPage
         }
     }
 
-    private function parseTree($tree)
+    private static function parseTree($tree)
     {
         $categories = array();
         foreach ($tree as $element => $parent) {
             if (!empty($parent)) {
-                $categories = array_merge($categories, $this->parseTree($parent));
+                $categories = array_merge($categories, self::parseTree($parent));
             }
             $categories[] = $element;
         }
         return $categories;
     }
 
-    private function getCategoryTree($title)
+    public static function getCategoryTree($title)
     {
         global $wgCountryCategory;
-        $categories = $this->parseTree($title->getParentCategoryTree());
+        $categories = self::parseTree($title->getParentCategoryTree());
         $return = '';
         if (isset($wgCountryCategory)
             && isset($categories[0])
