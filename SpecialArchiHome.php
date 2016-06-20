@@ -31,8 +31,42 @@ class SpecialArchiHome extends \SpecialPage
         }
     }
 
+    private function parseTree($tree)
+    {
+        $categories = array();
+        foreach ($tree as $element => $parent) {
+            if (!empty($parent)) {
+                $categories = array_merge($categories, $this->parseTree($parent));
+            }
+            $categories[] = $element;
+        }
+        return $categories;
+    }
+
+    private function getCategoryTree($title)
+    {
+        global $wgCountryCategory;
+        $categories = $this->parseTree($title->getParentCategoryTree());
+        $return = '';
+        if (isset($wgCountryCategory)
+            && isset($categories[0])
+            && preg_replace('/.+\:/', '', $categories[0]) == $wgCountryCategory
+        ) {
+            if (isset($categories[1])) {
+                $catTitle = \Title::newFromText($categories[1]);
+                $return .= \Linker::link($catTitle, htmlspecialchars($catTitle->getText()));
+                if (isset($categories[2])) {
+                    $catTitle = \Title::newFromText($categories[2]);
+                    $return .= ' > '.\Linker::link($catTitle, htmlspecialchars($catTitle->getText()));
+                }
+            }
+        }
+        return $return;
+    }
+
     public function execute($subPage)
     {
+        global $wgCountryCategory;
         $output = $this->getOutput();
         $this->setHeaders();
 
@@ -133,6 +167,9 @@ class SpecialArchiHome extends \SpecialPage
             );
 
             $wikitext .= '=== '.preg_replace('/\(.*\)/', '', $title->getText()).' ==='.PHP_EOL;
+            $output->addWikiText($wikitext);
+            $output->addHTML($this->getCategoryTree($title));
+            $wikitext = '';
             if (isset($images['query']['pages'][$id]['images'])) {
                 $wikitext .= '[['.$images['query']['pages'][$id]['images'][0]['title'].'|thumb|left|100px]]';
             }
@@ -174,7 +211,9 @@ class SpecialArchiHome extends \SpecialPage
                         $addressRev = \Revision::newFromId($addressTitle->getLatestRevID());
                         $articleRev = \Revision::newFromId($articleTitle->getLatestRevID());
                         if ($articleRev->getTimestamp() > $addressRev->getTimestamp()) {
+                            $parent = $address;
                             $address = $article;
+                            $address['parent'] = $parent;
                         }
                     }
                 }
@@ -207,6 +246,14 @@ class SpecialArchiHome extends \SpecialPage
                 );
 
                 $wikitext = '=== '.preg_replace('/\(.*\)/', '', $title->getText()).' ==='.PHP_EOL;
+                $output->addWikiText($wikitext);
+                $wikitext = '';
+                if (isset($change['parent'])) {
+                    $mainTitle = \Title::newFromText($change['parent']['title']);
+                } else {
+                    $mainTitle = $title;
+                }
+                $output->addHTML($this->getCategoryTree($mainTitle));
                 if (isset($images['query']['pages'][$id]['images'])) {
                     $wikitext .= '[['.$images['query']['pages'][$id]['images'][0]['title'].'|thumb|left|100px]]';
                 }
@@ -240,8 +287,9 @@ class SpecialArchiHome extends \SpecialPage
 
         foreach ($res as $row) {
             $title = \Title::newFromId($row->Comment_Page_ID);
-            $wikitext = '=== '.preg_replace('/\(.*\)/', '', $title->getText()).' ==='.PHP_EOL.
-                "''".strtok(wordwrap($row->Comment_Text, 170, '…'.PHP_EOL), PHP_EOL)."''".PHP_EOL.PHP_EOL.
+            $output->addWikiText('=== '.preg_replace('/\(.*\)/', '', $title->getText()).' ==='.PHP_EOL);
+            $output->addHTML($this->getCategoryTree($title));
+            $wikitext = "''".strtok(wordwrap($row->Comment_Text, 170, '…'.PHP_EOL), PHP_EOL)."''".PHP_EOL.PHP_EOL.
                 '[['.$title->getFullText().'#Commentaires|Consulter le commentaire]]';
             $output->addWikiText($wikitext);
             $output->addHTML('<div style="clear:both;"></div>');
