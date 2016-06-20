@@ -270,19 +270,18 @@ class SpecialArchiHome extends \SpecialPage
         );
 
         $dbr = wfGetDB(DB_SLAVE);
-        $res = $dbr->select(
-            array('Comments', 'page'),
-            array(
-                'Comment_Page_ID', 'page_id', 'Comment_Text'
-            ),
-            array('page_id IS NOT NULL'),
-            __METHOD__,
-            array('LIMIT'=>10, 'ORDER BY'=>'Comment_Date DESC'),
-            array(
-                'page' => array(
-                    'LEFT JOIN', 'Comment_Page_ID = page_id'
-                )
-            )
+        $res = $dbr->query(
+            'SELECT Comment_Page_ID, Comment_Date, Comment_Text
+            FROM (
+                SELECT Comment_Page_ID, Comment_Date, Comment_Text
+                FROM Comments
+                ORDER BY Comment_Date DESC
+            ) as Comments
+            LEFT JOIN `page` ON ((Comment_Page_ID = page_id))
+            WHERE (page_id IS NOT NULL)
+            GROUP BY Comment_Page_ID
+            ORDER BY Comment_Date DESC
+            LIMIT 10;'
         );
 
         foreach ($res as $row) {
