@@ -128,8 +128,7 @@ class SpecialArchiHome extends \SpecialPage
         $introTitle = $this->getTextFromArticle('MediaWiki:ArchiHome-about-title');
         if (isset($intro)) {
             $wikitext = '== '.$introTitle.' =='.PHP_EOL.
-            $intro.PHP_EOL.PHP_EOL.
-            '[[Archi-Wiki:À propos|Découvrir l\'association]]';
+            $intro.PHP_EOL;
             $output->addWikiText($wikitext);
         }
 
