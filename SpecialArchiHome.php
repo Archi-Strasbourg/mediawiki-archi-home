@@ -255,7 +255,11 @@ class SpecialArchiHome extends \SpecialPage
                 if (isset($images['query']['pages'][$id]['images'])) {
                     $wikitext .= '[['.$images['query']['pages'][$id]['images'][0]['title'].'|thumb|left|100px]]';
                 }
-                $wikitext .= $extracts['query']['pages'][$id]['extract']['*'].PHP_EOL.PHP_EOL.
+                $wikitext .= preg_replace(
+                    '/��[0-9]/',
+                    '',
+                    $extracts['query']['pages'][$id]['extract']['*']
+                ).PHP_EOL.PHP_EOL.
                     '[['.$title->getFullText().'|Consulter cette fiche]]';
                 $output->addWikiText($wikitext);
                 $output->addHTML('<div style="clear:both;"></div>');
