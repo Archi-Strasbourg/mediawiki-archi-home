@@ -171,7 +171,8 @@ class SpecialArchiHome extends \SpecialPage
                 '|thumb|left|100px]]';
             }
             $wikitext .= $extracts['query']['pages'][$title->getArticleID()]['extract']['*'].PHP_EOL.PHP_EOL.
-                '[['.$title->getFullText().'|Lire la suite]]';
+                '[['.$title->getFullText().'|Lire la suite]]'.PHP_EOL.PHP_EOL.
+                '[[Special:ArchiBlog|Découvrir les autres actualités]]';
             $output->addWikiText($wikitext);
             $output->addHTML('<div style="clear:both;"></div>');
         }
