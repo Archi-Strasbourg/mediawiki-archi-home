@@ -104,7 +104,7 @@ class SpecialArchiHome extends \SpecialPage
             if (isset($images['query']['pages'][$id]['images'])) {
                 $wikitext .= '[['.$images['query']['pages'][$id]['images'][0]['title'].'|thumb|left|100px]]';
             }
-            $wikitext .= $extracts['query']['pages'][$id]['extract']['*'].PHP_EOL.PHP_EOL.
+            $wikitext .= PHP_EOL.$extracts['query']['pages'][$id]['extract']['*'].PHP_EOL.PHP_EOL.
                 '[['.$title.'|Découvrir cette fiche]]';
             $output->addWikiText($wikitext);
             $output->addHTML('<div style="clear:both;"></div>');
@@ -255,7 +255,7 @@ class SpecialArchiHome extends \SpecialPage
                 if (isset($images['query']['pages'][$id]['images'])) {
                     $wikitext .= '[['.$images['query']['pages'][$id]['images'][0]['title'].'|thumb|left|100px]]';
                 }
-                $wikitext .= preg_replace(
+                $wikitext .= PHP_EOL.preg_replace(
                     '/��[0-9]/',
                     '',
                     $extracts['query']['pages'][$id]['extract']['*']
