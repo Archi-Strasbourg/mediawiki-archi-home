@@ -222,6 +222,13 @@ class SpecialArchiHome extends \SpecialPage
             if (isset($change['title'])) {
                 $title = \Title::newFromText($change['title']);
                 $id = $title->getArticleID();
+                if (isset($change['parent'])) {
+                    $mainTitle = \Title::newFromText($change['parent']['title']);
+                    $mainTitleId = $mainTitle->getArticleID();
+                } else {
+                    $mainTitle = $title;
+                    $mainTitleId = $id;
+                }
 
                 $extracts = $this->apiRequest(
                     array(
@@ -238,7 +245,7 @@ class SpecialArchiHome extends \SpecialPage
                     array(
                         'action'=>'query',
                         'prop'=>'images',
-                        'titles'=>$change['title'],
+                        'titles'=>$mainTitle,
                         'imlimit'=>1
                     )
                 );
@@ -246,14 +253,10 @@ class SpecialArchiHome extends \SpecialPage
                 $wikitext = '=== '.preg_replace('/\(.*\)/', '', $title->getText()).' ==='.PHP_EOL;
                 $output->addWikiText($wikitext);
                 $wikitext = '';
-                if (isset($change['parent'])) {
-                    $mainTitle = \Title::newFromText($change['parent']['title']);
-                } else {
-                    $mainTitle = $title;
-                }
                 $output->addHTML($this->getCategoryTree($mainTitle));
-                if (isset($images['query']['pages'][$id]['images'])) {
-                    $wikitext .= '[['.$images['query']['pages'][$id]['images'][0]['title'].'|thumb|left|100px]]';
+                if (isset($images['query']['pages'][$mainTitleId]['images'])) {
+                    $wikitext .= '[['.$images['query']['pages'][$mainTitleId]['images'][0]['title'].
+                        '|thumb|left|100px]]';
                 }
                 $wikitext .= PHP_EOL.preg_replace(
                     '/��[0-9]/',
