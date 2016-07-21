@@ -80,19 +80,11 @@ class SpecialArchiHome extends \SpecialPage
             $extracts = $this->apiRequest(
                 array(
                 'action'=>'query',
-                'prop'=>'extracts',
+                'prop'=>'extracts|images',
                 'titles'=>$title,
                 'explaintext'=>true,
                 'exchars'=>120,
-                'exsectionformat'=>'plain'
-                )
-            );
-
-            $images = $this->apiRequest(
-                array(
-                'action'=>'query',
-                'prop'=>'images',
-                'titles'=>$title,
+                'exsectionformat'=>'plain',
                 'imlimit'=>1
                 )
             );
@@ -101,8 +93,8 @@ class SpecialArchiHome extends \SpecialPage
             $output->addWikiText($wikitext);
             $output->addHTML($this->getCategoryTree($title));
             $wikitext = '';
-            if (isset($images['query']['pages'][$id]['images'])) {
-                $wikitext .= '[['.$images['query']['pages'][$id]['images'][0]['title'].'|thumb|left|100px]]';
+            if (isset($extracts['query']['pages'][$id]['images'])) {
+                $wikitext .= '[['.$extracts['query']['pages'][$id]['images'][0]['title'].'|thumb|left|100px]]';
             }
             $wikitext .= PHP_EOL.$extracts['query']['pages'][$id]['extract']['*'].PHP_EOL.PHP_EOL.
                 '[['.$title.'|Découvrir cette fiche]]';
@@ -147,27 +139,19 @@ class SpecialArchiHome extends \SpecialPage
             $extracts = $this->apiRequest(
                 array(
                 'action'=>'query',
-                'prop'=>'extracts',
+                'prop'=>'extracts|images',
                 'titles'=>$news['query']['recentchanges'][0]['title'],
                 'explaintext'=>true,
                 'exintro'=>true,
                 'exchars'=>250,
-                'exsectionformat'=>'plain'
-                )
-            );
-
-            $images = $this->apiRequest(
-                array(
-                'action'=>'query',
-                'prop'=>'images',
-                'titles'=>$title,
+                'exsectionformat'=>'plain',
                 'imlimit'=>1
                 )
             );
 
             $wikitext = '== Dernière actualité de de l\'association&nbsp;:<br/>'.$title->getText().' =='.PHP_EOL;
-            if (isset($images['query']['pages'][$title->getArticleID()]['images'])) {
-                $wikitext .= '[['.$images['query']['pages'][$title->getArticleID()]['images'][0]['title'].
+            if (isset($extracts['query']['pages'][$title->getArticleID()]['images'])) {
+                $wikitext .= '[['.$extracts['query']['pages'][$title->getArticleID()]['images'][0]['title'].
                 '|thumb|left|100px]]';
             }
             $wikitext .= $extracts['query']['pages'][$title->getArticleID()]['extract']['*'].PHP_EOL.PHP_EOL.
