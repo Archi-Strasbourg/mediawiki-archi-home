@@ -114,6 +114,9 @@ class SpecialArchiHome extends \SpecialPage
                 <input type="submit" class="searchButton" value="Lire">
 			</form>'
         );
+        $output->addWikiText(
+            '{{#queryformlink:form=Recherche avancée|link text=Recherche avancée}}'
+        );
 
         //Qui sommes-nous ?
         $intro = $this->getTextFromArticle('MediaWiki:ArchiHome-about');
