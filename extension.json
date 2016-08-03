@@ -1,4 +1,5 @@
 {
+	"manifest_version": 1,
 	"name": "ArchiHome",
 	"author": "Pierre Rudloff",
 	"url": "https://github.com/Archi-Strasbourg/mediawiki-archi-home",
