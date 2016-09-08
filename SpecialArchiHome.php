@@ -17,6 +17,7 @@ class SpecialArchiHome extends \SpecialPage
         );
         $api = new \ApiMain($params);
         $api->execute();
+
         return $api->getResult()->getResultData();
     }
 
@@ -27,19 +28,20 @@ class SpecialArchiHome extends \SpecialPage
         if (isset($revision)) {
             return $revision->getText();
         } else {
-            return null;
+            return;
         }
     }
 
     private static function parseTree($tree)
     {
-        $categories = array();
+        $categories = [];
         foreach ($tree as $element => $parent) {
             if (!empty($parent)) {
                 $categories = array_merge($categories, self::parseTree($parent));
             }
             $categories[] = $element;
         }
+
         return $categories;
     }
 
@@ -61,6 +63,7 @@ class SpecialArchiHome extends \SpecialPage
                 }
             }
         }
+
         return $return;
     }
 
@@ -78,15 +81,15 @@ class SpecialArchiHome extends \SpecialPage
             $id = $title->getArticleID();
 
             $extracts = $this->apiRequest(
-                array(
-                'action'=>'query',
-                'prop'=>'extracts|images',
-                'titles'=>$title,
-                'explaintext'=>true,
-                'exchars'=>120,
-                'exsectionformat'=>'plain',
-                'imlimit'=>1
-                )
+                [
+                'action'          => 'query',
+                'prop'            => 'extracts|images',
+                'titles'          => $title,
+                'explaintext'     => true,
+                'exchars'         => 120,
+                'exsectionformat' => 'plain',
+                'imlimit'         => 1,
+                ]
             );
 
             $wikitext .= '=== '.preg_replace('/\(.*\)/', '', $title->getText()).' ==='.PHP_EOL;
@@ -129,27 +132,27 @@ class SpecialArchiHome extends \SpecialPage
 
         //Actualités de l'association
         $news = $this->apiRequest(
-            array(
-                'action'=>'query',
-                'list'=>'recentchanges',
-                'rcnamespace'=>NS_NEWS,
-                'rclimit'=>1,
-                'rctype'=>'new'
-            )
+            [
+                'action'      => 'query',
+                'list'        => 'recentchanges',
+                'rcnamespace' => NS_NEWS,
+                'rclimit'     => 1,
+                'rctype'      => 'new',
+            ]
         );
         if (isset($news['query']['recentchanges'][0])) {
             $title = \Title::newFromText($news['query']['recentchanges'][0]['title']);
             $extracts = $this->apiRequest(
-                array(
-                'action'=>'query',
-                'prop'=>'extracts|images',
-                'titles'=>$news['query']['recentchanges'][0]['title'],
-                'explaintext'=>true,
-                'exintro'=>true,
-                'exchars'=>250,
-                'exsectionformat'=>'plain',
-                'imlimit'=>1
-                )
+                [
+                'action'          => 'query',
+                'prop'            => 'extracts|images',
+                'titles'          => $news['query']['recentchanges'][0]['title'],
+                'explaintext'     => true,
+                'exintro'         => true,
+                'exchars'         => 250,
+                'exsectionformat' => 'plain',
+                'imlimit'         => 1,
+                ]
             );
 
             $wikitext = '== Dernière actualité de de l\'association&nbsp;:<br/>'.$title->getText().' =='.PHP_EOL;
@@ -170,22 +173,22 @@ class SpecialArchiHome extends \SpecialPage
         );
 
         $addresses = $this->apiRequest(
-            array(
-                'action'=>'query',
-                'list'=>'recentchanges',
-                'rcnamespace'=>NS_ADDRESS,
-                'rclimit'=>6,
-                'rctoponly'=>true
-            )
+            [
+                'action'      => 'query',
+                'list'        => 'recentchanges',
+                'rcnamespace' => NS_ADDRESS,
+                'rclimit'     => 6,
+                'rctoponly'   => true,
+            ]
         );
         $news = $this->apiRequest(
-            array(
-                'action'=>'query',
-                'list'=>'recentchanges',
-                'rcnamespace'=>NS_ADDRESS_NEWS,
-                'rclimit'=>6,
-                'rctoponly'=>true
-            )
+            [
+                'action'      => 'query',
+                'list'        => 'recentchanges',
+                'rcnamespace' => NS_ADDRESS_NEWS,
+                'rclimit'     => 6,
+                'rctoponly'   => true,
+            ]
         );
         foreach ($addresses['query']['recentchanges'] as &$address) {
             foreach ($news['query']['recentchanges'] as &$article) {
@@ -204,7 +207,7 @@ class SpecialArchiHome extends \SpecialPage
                 }
             }
         }
-        $changes = array();
+        $changes = [];
         foreach ($addresses['query']['recentchanges'] as $change) {
             if (isset($change['title'])) {
                 $title = \Title::newFromText($change['title']);
@@ -218,23 +221,23 @@ class SpecialArchiHome extends \SpecialPage
                 }
 
                 $extracts = $this->apiRequest(
-                    array(
-                        'action'=>'query',
-                        'prop'=>'extracts',
-                        'titles'=>$change['title'],
-                        'explaintext'=>true,
-                        'exchars'=>120,
-                        'exsectionformat'=>'plain'
-                    )
+                    [
+                        'action'          => 'query',
+                        'prop'            => 'extracts',
+                        'titles'          => $change['title'],
+                        'explaintext'     => true,
+                        'exchars'         => 120,
+                        'exsectionformat' => 'plain',
+                    ]
                 );
 
                 $images = $this->apiRequest(
-                    array(
-                        'action'=>'query',
-                        'prop'=>'images',
-                        'titles'=>$mainTitle,
-                        'imlimit'=>1
-                    )
+                    [
+                        'action'  => 'query',
+                        'prop'    => 'images',
+                        'titles'  => $mainTitle,
+                        'imlimit' => 1,
+                    ]
                 );
 
                 $wikitext = '=== '.preg_replace('/\(.*\)/', '', $title->getText()).' ==='.PHP_EOL;
@@ -264,16 +267,16 @@ class SpecialArchiHome extends \SpecialPage
 
         $dbr = wfGetDB(DB_SLAVE);
         $res = $dbr->select(
-            array('Comments', 'page'),
-            array('Comment_Page_ID', 'Comment_Date', 'Comment_Text'),
+            ['Comments', 'page'],
+            ['Comment_Page_ID', 'Comment_Date', 'Comment_Text'],
             'page_id IS NOT NULL',
             null,
-            array('ORDER BY'=>'Comment_Date DESC', 'LIMIT 20'),
-            array(
-                'page'=>array(
-                    'LEFT JOIN', 'Comment_Page_ID = page_id'
-                )
-            )
+            ['ORDER BY' => 'Comment_Date DESC', 'LIMIT 20'],
+            [
+                'page' => [
+                    'LEFT JOIN', 'Comment_Page_ID = page_id',
+                ],
+            ]
         );
 
         foreach ($res as $row) {
@@ -291,6 +294,6 @@ class SpecialArchiHome extends \SpecialPage
 
     public function getGroupName()
     {
-           return 'pages';
+        return 'pages';
     }
 }
