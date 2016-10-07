@@ -271,7 +271,7 @@ class SpecialArchiHome extends \SpecialPage
             ['Comment_Page_ID', 'Comment_Date', 'Comment_Text'],
             'page_id IS NOT NULL',
             null,
-            ['ORDER BY' => 'Comment_Date DESC', 'LIMIT 20'],
+            ['ORDER BY' => 'Comment_Date DESC'],
             [
                 'page' => [
                     'LEFT JOIN', 'Comment_Page_ID = page_id',
@@ -280,6 +280,9 @@ class SpecialArchiHome extends \SpecialPage
         );
 
         foreach ($res as $row) {
+            if ($res->key() > 20) {
+                break;
+            }
             $title = \Title::newFromId($row->Comment_Page_ID);
             $output->addWikiText('=== '.preg_replace('/\(.*\)/', '', $title->getText()).' ==='.PHP_EOL);
             $output->addHTML($this->getCategoryTree($title));
