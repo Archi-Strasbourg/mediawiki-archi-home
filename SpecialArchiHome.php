@@ -69,7 +69,9 @@ class SpecialArchiHome extends \SpecialPage
 
     public function execute($subPage)
     {
-        global $wgCountryCategory;
+        global $wgCountryCategory, $wgTitle;
+        $article = new \Article($wgTitle);
+        $languageCode = $article->getContext()->getLanguage()->getCode();
         $output = $this->getOutput();
         $this->setHeaders();
 
@@ -177,7 +179,6 @@ class SpecialArchiHome extends \SpecialPage
                 'action'      => 'query',
                 'list'        => 'recentchanges',
                 'rcnamespace' => NS_ADDRESS,
-                'rclimit'     => 6,
                 'rctoponly'   => true,
             ]
         );
@@ -186,7 +187,6 @@ class SpecialArchiHome extends \SpecialPage
                 'action'      => 'query',
                 'list'        => 'recentchanges',
                 'rcnamespace' => NS_ADDRESS_NEWS,
-                'rclimit'     => 6,
                 'rctoponly'   => true,
             ]
         );
@@ -208,55 +208,62 @@ class SpecialArchiHome extends \SpecialPage
             }
         }
         $changes = [];
+        $i = 0;
         foreach ($addresses['query']['recentchanges'] as $change) {
+            if ($i >= 6) {
+                break;
+            }
             if (isset($change['title'])) {
                 $title = \Title::newFromText($change['title']);
-                $id = $title->getArticleID();
-                if (isset($change['parent'])) {
-                    $mainTitle = \Title::newFromText($change['parent']['title']);
-                    $mainTitleId = $mainTitle->getArticleID();
-                } else {
-                    $mainTitle = $title;
-                    $mainTitleId = $id;
+                if ($title->getPageLanguage()->getCode() == $languageCode) {
+                    $i++;
+                    $id = $title->getArticleID();
+                    if (isset($change['parent'])) {
+                        $mainTitle = \Title::newFromText($change['parent']['title']);
+                        $mainTitleId = $mainTitle->getArticleID();
+                    } else {
+                        $mainTitle = $title;
+                        $mainTitleId = $id;
+                    }
+
+                    $extracts = $this->apiRequest(
+                        [
+                            'action'          => 'query',
+                            'prop'            => 'extracts',
+                            'titles'          => $change['title'],
+                            'explaintext'     => true,
+                            'exchars'         => 120,
+                            'exsectionformat' => 'plain',
+                        ]
+                    );
+
+                    $images = $this->apiRequest(
+                        [
+                            'action'  => 'query',
+                            'prop'    => 'images',
+                            'titles'  => $mainTitle,
+                            'imlimit' => 1,
+                        ]
+                    );
+
+                    $wikitext = '=== '.preg_replace('/\(.*\)/', '', $title->getText()).' ==='.PHP_EOL;
+                    $output->addWikiText($wikitext);
+                    $wikitext = '';
+                    $output->addHTML($this->getCategoryTree($mainTitle));
+                    if (isset($images['query']['pages'][$mainTitleId]['images'])) {
+                        $wikitext .= '[['.$images['query']['pages'][$mainTitleId]['images'][0]['title'].
+                            '|thumb|left|100px]]';
+                    }
+                    $wikitext .= PHP_EOL.preg_replace(
+                        '/��[0-9]/',
+                        '',
+                        $extracts['query']['pages'][$id]['extract']['*']
+                    ).PHP_EOL.PHP_EOL.
+                        '[['.$title->getFullText().'|Consulter cette fiche]]';
+                    $wikitext = str_replace("\t\t\n", '', $wikitext);
+                    $output->addWikiText($wikitext);
+                    $output->addHTML('<div style="clear:both;"></div>');
                 }
-
-                $extracts = $this->apiRequest(
-                    [
-                        'action'          => 'query',
-                        'prop'            => 'extracts',
-                        'titles'          => $change['title'],
-                        'explaintext'     => true,
-                        'exchars'         => 120,
-                        'exsectionformat' => 'plain',
-                    ]
-                );
-
-                $images = $this->apiRequest(
-                    [
-                        'action'  => 'query',
-                        'prop'    => 'images',
-                        'titles'  => $mainTitle,
-                        'imlimit' => 1,
-                    ]
-                );
-
-                $wikitext = '=== '.preg_replace('/\(.*\)/', '', $title->getText()).' ==='.PHP_EOL;
-                $output->addWikiText($wikitext);
-                $wikitext = '';
-                $output->addHTML($this->getCategoryTree($mainTitle));
-                if (isset($images['query']['pages'][$mainTitleId]['images'])) {
-                    $wikitext .= '[['.$images['query']['pages'][$mainTitleId]['images'][0]['title'].
-                        '|thumb|left|100px]]';
-                }
-                $wikitext .= PHP_EOL.preg_replace(
-                    '/��[0-9]/',
-                    '',
-                    $extracts['query']['pages'][$id]['extract']['*']
-                ).PHP_EOL.PHP_EOL.
-                    '[['.$title->getFullText().'|Consulter cette fiche]]';
-                $wikitext = str_replace("\t\t\n", '', $wikitext);
-                $output->addWikiText($wikitext);
-                $output->addHTML('<div style="clear:both;"></div>');
             }
         }
         $output->addWikiText('[[Special:Modifications récentes|Toutes les dernières modifications]]');
