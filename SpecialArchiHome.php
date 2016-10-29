@@ -254,6 +254,7 @@ class SpecialArchiHome extends \SpecialPage
                     $extracts['query']['pages'][$id]['extract']['*']
                 ).PHP_EOL.PHP_EOL.
                     '[['.$title->getFullText().'|Consulter cette fiche]]';
+                $wikitext = str_replace("\t\t\n", '', $wikitext);
                 $output->addWikiText($wikitext);
                 $output->addHTML('<div style="clear:both;"></div>');
             }
