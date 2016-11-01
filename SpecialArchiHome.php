@@ -81,30 +81,31 @@ class SpecialArchiHome extends \SpecialPage
             $title = \Title::newFromText($focus);
             $wikitext = '==Lumière sur…=='.PHP_EOL;
             $id = $title->getArticleID();
+            if (isset($id) && $id > 0) {
+                $extracts = $this->apiRequest(
+                    [
+                    'action'          => 'query',
+                    'prop'            => 'extracts|images',
+                    'titles'          => $title,
+                    'explaintext'     => true,
+                    'exchars'         => 120,
+                    'exsectionformat' => 'plain',
+                    'imlimit'         => 1,
+                    ]
+                );
 
-            $extracts = $this->apiRequest(
-                [
-                'action'          => 'query',
-                'prop'            => 'extracts|images',
-                'titles'          => $title,
-                'explaintext'     => true,
-                'exchars'         => 120,
-                'exsectionformat' => 'plain',
-                'imlimit'         => 1,
-                ]
-            );
-
-            $wikitext .= '=== '.preg_replace('/\(.*\)/', '', $title->getText()).' ==='.PHP_EOL;
-            $output->addWikiText($wikitext);
-            $output->addHTML($this->getCategoryTree($title));
-            $wikitext = '';
-            if (isset($extracts['query']['pages'][$id]['images'])) {
-                $wikitext .= '[['.$extracts['query']['pages'][$id]['images'][0]['title'].'|thumb|left|100px]]';
+                $wikitext .= '=== '.preg_replace('/\(.*\)/', '', $title->getText()).' ==='.PHP_EOL;
+                $output->addWikiText($wikitext);
+                $output->addHTML($this->getCategoryTree($title));
+                $wikitext = '';
+                if (isset($extracts['query']['pages'][$id]['images'])) {
+                    $wikitext .= '[['.$extracts['query']['pages'][$id]['images'][0]['title'].'|thumb|left|100px]]';
+                }
+                $wikitext .= PHP_EOL.$extracts['query']['pages'][$id]['extract']['*'].PHP_EOL.PHP_EOL.
+                    '[['.$title.'|Découvrir cette fiche]]';
+                $output->addWikiText($wikitext);
+                $output->addHTML('<div style="clear:both;"></div>');
             }
-            $wikitext .= PHP_EOL.$extracts['query']['pages'][$id]['extract']['*'].PHP_EOL.PHP_EOL.
-                '[['.$title.'|Découvrir cette fiche]]';
-            $output->addWikiText($wikitext);
-            $output->addHTML('<div style="clear:both;"></div>');
         }
 
         //Recherche
