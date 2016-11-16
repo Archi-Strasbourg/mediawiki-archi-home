@@ -15,5 +15,8 @@
 		"ArchiHome": [
 			"i18n"
 		]
-	}
+	},
+    "ExtensionMessagesFiles": {
+        "ArchiHomeAlias": "ArchiHome.i18n.alias.php"
+    }
 }
