@@ -1,6 +1,7 @@
 <?php
+
 $specialPageAliases = [];
 
 $specialPageAliases['en'] = [
-	'ArchiHome' => ['ArchiHome'],
+    'ArchiHome' => ['ArchiHome'],
 ];
