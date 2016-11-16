@@ -1,22 +1,22 @@
 {
-	"manifest_version": 1,
-	"name": "ArchiHome",
-	"author": "Pierre Rudloff",
-	"url": "https://github.com/Archi-Strasbourg/mediawiki-archi-home",
-	"description": "Custom homepage for archi-wiki.org",
-	"type": "specialpage",
-	"SpecialPages": {
-		"ArchiHome": "ArchiHome\\SpecialArchiHome"
-	},
-	"AutoloadClasses": {
-		"ArchiHome\\SpecialArchiHome": "SpecialArchiHome.php"
-	},
-	"MessagesDirs": {
-		"ArchiHome": [
-			"i18n"
-		]
-	},
-    "ExtensionMessagesFiles": {
-        "ArchiHomeAlias": "ArchiHome.i18n.alias.php"
-    }
+  "manifest_version": 1,
+  "name": "ArchiHome",
+  "author": "Pierre Rudloff",
+  "url": "https://github.com/Archi-Strasbourg/mediawiki-archi-home",
+  "description": "Custom homepage for archi-wiki.org",
+  "type": "specialpage",
+  "SpecialPages": {
+    "ArchiHome": "ArchiHome\\SpecialArchiHome"
+  },
+  "AutoloadClasses": {
+    "ArchiHome\\SpecialArchiHome": "SpecialArchiHome.php"
+  },
+  "MessagesDirs": {
+    "ArchiHome": [
+      "i18n"
+    ]
+  },
+  "ExtensionMessagesFiles": {
+    "ArchiHomeAlias": "ArchiHome.i18n.alias.php"
+  }
 }
