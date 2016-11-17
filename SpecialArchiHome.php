@@ -289,7 +289,7 @@ class SpecialArchiHome extends \SpecialPage
         );
 
         foreach ($res as $row) {
-            if ($res->key() > 20) {
+            if ($res->key() > 5) {
                 break;
             }
             $title = \Title::newFromId($row->Comment_Page_ID);
