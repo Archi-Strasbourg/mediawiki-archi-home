@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "bafdf72dba8d579869808776289a1c13",
-    "content-hash": "24e455c3dc5070bea4101197f4521f2b",
+    "hash": "ebcb036cf383a309835d1a23c139e239",
+    "content-hash": "54bdb18c7787be60076333f9ab519c23",
     "packages": [
         {
             "name": "composer/installers",
@@ -116,15 +116,15 @@
         },
         {
             "name": "mediawiki/TextExtracts",
-            "version": "1.26+e399b19",
+            "version": "1.28+bb9fed0",
             "source": {
                 "type": "git",
                 "url": "https://gerrit.wikimedia.org/r/mediawiki/extensions/TextExtracts.git",
-                "reference": "e399b19"
+                "reference": "bb9fed0"
             },
             "dist": {
                 "type": "tar",
-                "url": "https://extdist.wmflabs.org/dist/extensions/TextExtracts-REL1_26-e399b19.tar.gz",
+                "url": "https://extdist.wmflabs.org/dist/extensions/TextExtracts-REL1_28-bb9fed0.tar.gz",
                 "reference": null,
                 "shasum": null
             },
