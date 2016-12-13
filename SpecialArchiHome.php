@@ -1,14 +1,27 @@
 <?php
-
+/**
+ * SpecialArchiHome class
+ */
 namespace ArchiHome;
 
+/**
+ * SpecialPage Special:ArchiHome that displays the custom homepage
+ */
 class SpecialArchiHome extends \SpecialPage
 {
+    /**
+     * SpecialArchiHome constructor
+     */
     public function __construct()
     {
         parent::__construct('ArchiHome');
     }
 
+    /**
+     * Send a request to the MediaWiki API
+     * @param  array $options Request parameters
+     * @return array
+     */
     private function apiRequest($options)
     {
         $params = new \DerivativeRequest(
@@ -21,6 +34,11 @@ class SpecialArchiHome extends \SpecialPage
         return $api->getResult()->getResultData();
     }
 
+    /**
+     * Extract text content from an article
+     * @param  string $title Article title
+     * @return string
+     */
     private function getTextFromArticle($title)
     {
         $title = \Title::newFromText($title);
@@ -32,7 +50,12 @@ class SpecialArchiHome extends \SpecialPage
         }
     }
 
-    private static function parseTree($tree)
+    /**
+     * Parse a category tree
+     * @param  array $tree Category tree
+     * @return array Category list
+     */
+    private static function parseTree(array $tree)
     {
         $categories = [];
         foreach ($tree as $element => $parent) {
@@ -45,7 +68,12 @@ class SpecialArchiHome extends \SpecialPage
         return $categories;
     }
 
-    public static function getCategoryTree($title)
+    /**
+     * Get a category tree from an article
+     * @param  \Title $title Article title
+     * @return array Category tree
+     */
+    public static function getCategoryTree(\Title $title)
     {
         global $wgCountryCategory;
         $categories = self::parseTree($title->getParentCategoryTree());
@@ -67,7 +95,11 @@ class SpecialArchiHome extends \SpecialPage
         return $return;
     }
 
-    public function execute($subPage)
+    /**
+     * Display the special page
+     * @return void
+     */
+    public function execute()
     {
         global $wgCountryCategory, $wgTitle;
         $article = new \Article($wgTitle);
@@ -304,6 +336,10 @@ class SpecialArchiHome extends \SpecialPage
         $output->addWikiText('[[Special:ArchiComments|Tous les derniers commentaires]]');
     }
 
+    /**
+     * Return the special page category
+     * @return string
+     */
     public function getGroupName()
     {
         return 'pages';
