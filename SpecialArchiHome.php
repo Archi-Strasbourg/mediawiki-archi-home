@@ -1,16 +1,17 @@
 <?php
 /**
- * SpecialArchiHome class
+ * SpecialArchiHome class.
  */
+
 namespace ArchiHome;
 
 /**
- * SpecialPage Special:ArchiHome that displays the custom homepage
+ * SpecialPage Special:ArchiHome that displays the custom homepage.
  */
 class SpecialArchiHome extends \SpecialPage
 {
     /**
-     * SpecialArchiHome constructor
+     * SpecialArchiHome constructor.
      */
     public function __construct()
     {
@@ -18,8 +19,10 @@ class SpecialArchiHome extends \SpecialPage
     }
 
     /**
-     * Send a request to the MediaWiki API
-     * @param  array $options Request parameters
+     * Send a request to the MediaWiki API.
+     *
+     * @param array $options Request parameters
+     *
      * @return array
      */
     private function apiRequest($options)
@@ -35,8 +38,10 @@ class SpecialArchiHome extends \SpecialPage
     }
 
     /**
-     * Extract text content from an article
-     * @param  string $title Article title
+     * Extract text content from an article.
+     *
+     * @param string $title Article title
+     *
      * @return string
      */
     private function getTextFromArticle($title)
@@ -51,8 +56,10 @@ class SpecialArchiHome extends \SpecialPage
     }
 
     /**
-     * Parse a category tree
-     * @param  array $tree Category tree
+     * Parse a category tree.
+     *
+     * @param array $tree Category tree
+     *
      * @return array Category list
      */
     private static function parseTree(array $tree)
@@ -69,8 +76,10 @@ class SpecialArchiHome extends \SpecialPage
     }
 
     /**
-     * Get a category tree from an article
-     * @param  \Title $title Article title
+     * Get a category tree from an article.
+     *
+     * @param \Title $title Article title
+     *
      * @return array Category tree
      */
     public static function getCategoryTree(\Title $title)
@@ -96,7 +105,8 @@ class SpecialArchiHome extends \SpecialPage
     }
 
     /**
-     * Display the special page
+     * Display the special page.
+     *
      * @return void
      */
     public function execute()
@@ -337,7 +347,8 @@ class SpecialArchiHome extends \SpecialPage
     }
 
     /**
-     * Return the special page category
+     * Return the special page category.
+     *
      * @return string
      */
     public function getGroupName()
