@@ -107,9 +107,11 @@ class SpecialArchiHome extends \SpecialPage
     /**
      * Display the special page.
      *
+     * @param string $subPage
+     *
      * @return void
      */
-    public function execute()
+    public function execute($subPage)
     {
         global $wgCountryCategory, $wgTitle;
         $article = new \Article($wgTitle);
