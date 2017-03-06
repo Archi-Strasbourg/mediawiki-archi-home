@@ -1,3 +1,15 @@
 {
-	"archihome": "Accueil"
+	"archihome": "Accueil",
+	"featured": "Lumière sur…",
+	"readthis": "Découvrir cette fiche",
+	"search-placeholder": "Indiquez une adresse, un nom de rue ou de bâtiment",
+	"read": "Lire",
+	"othernews": "Découvrir les autres actualités",
+	"allrecentchanges": "Toutes les dernières modifications",
+	"recentcomments": "Derniers commentaires",
+	"allrecentcomments": "Tous les derniers commentaires",
+	"lastblog": "Dernière actualité de de l'association&nbsp;:",
+	"searchdesc": "Recherchez à travers nos $1 adresses et $2 photos&nbsp;:",
+	"advancedsearch": "Recherche avancée",
+	"readthiscomment": "Consulter le commentaire"
 }

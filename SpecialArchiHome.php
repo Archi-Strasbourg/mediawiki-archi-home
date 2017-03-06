@@ -123,7 +123,7 @@ class SpecialArchiHome extends \SpecialPage
         $focus = $this->getTextFromArticle('MediaWiki:ArchiHome-focus');
         if (isset($focus)) {
             $title = \Title::newFromText($focus);
-            $wikitext = '==Lumière sur…=='.PHP_EOL;
+            $wikitext = '=='.wfMessage('featured')->parse().'=='.PHP_EOL;
             $id = $title->getArticleID();
             if (isset($id) && $id > 0) {
                 $extracts = $this->apiRequest(
@@ -146,7 +146,7 @@ class SpecialArchiHome extends \SpecialPage
                     $wikitext .= '[['.$extracts['query']['pages'][$id]['images'][0]['title'].'|thumb|left|100px]]';
                 }
                 $wikitext .= PHP_EOL.$extracts['query']['pages'][$id]['extract']['*'].PHP_EOL.PHP_EOL.
-                    '[['.$title.'|Découvrir cette fiche]]';
+                    '[['.$title.'|'.wfMessage('readthis')->parse().']]';
                 $output->addWikiText($wikitext);
                 $output->addHTML('<div style="clear:both;"></div>');
             }
@@ -154,18 +154,17 @@ class SpecialArchiHome extends \SpecialPage
 
         //Recherche
         $output->addWikiText(
-            'Recherchez à travers nos {{PAGESINNAMESPACE:'.NS_ADDRESS.'}} '.
-            'adresses et {{PAGESINNAMESPACE:6}} photos&nbsp;:'
+            wfMessage('searchdesc', '{{PAGESINNAMESPACE:'.NS_ADDRESS.'}}', '{{PAGESINNAMESPACE:6}}')->parse()
         );
         $output->addHTML(
             '<form id="searchform">
-				<input type="search" placeholder="Indiquez une adresse, un nom de rue ou de bâtiment" name="search">
+				<input type="search" placeholder="'.wfMessage('search-placeholder')->parse().'" name="search">
                 <input type="hidden" name="title" value="Spécial:Recherche">
-                <input type="submit" class="searchButton" value="Lire">
+                <input type="submit" class="searchButton" value="'.wfMessage('read')->parse().'">
 			</form>'
         );
         $output->addWikiText(
-            '{{#queryformlink:form=Recherche avancée|link text=Recherche avancée}}'
+            '{{#queryformlink:form=Recherche avancée|link text='.wfMessage('advancedsearch')->parse().'}}'
         );
 
         //Qui sommes-nous ?
@@ -202,21 +201,21 @@ class SpecialArchiHome extends \SpecialPage
                 ]
             );
 
-            $wikitext = '== Dernière actualité de de l\'association&nbsp;:<br/>'.$title->getText().' =='.PHP_EOL;
+            $wikitext = '== '.wfMessage('lastblog')->parse().'<br/>'.$title->getText().' =='.PHP_EOL;
             if (isset($extracts['query']['pages'][$title->getArticleID()]['images'])) {
                 $wikitext .= '[['.$extracts['query']['pages'][$title->getArticleID()]['images'][0]['title'].
                 '|thumb|left|100px]]';
             }
             $wikitext .= $extracts['query']['pages'][$title->getArticleID()]['extract']['*'].PHP_EOL.PHP_EOL.
-                '[['.$title->getFullText().'|Lire la suite]]'.PHP_EOL.PHP_EOL.
-                '[[Special:ArchiBlog|Découvrir les autres actualités]]';
+                '[['.$title->getFullText().'|'.wfMessage('readmore')->parse().']]'.PHP_EOL.PHP_EOL.
+                '[[Special:ArchiBlog|'.wfMessage('othernews')->parse().']]';
             $output->addWikiText($wikitext);
             $output->addHTML('<div style="clear:both;"></div>');
         }
 
         //Dernières modifications
         $output->addWikiText(
-            '== Dernières modifications =='
+            '== '.wfMessage('recentchanges')->parse().' =='
         );
 
         $addresses = $this->apiRequest(
@@ -304,18 +303,18 @@ class SpecialArchiHome extends \SpecialPage
                         '',
                         $extracts['query']['pages'][$id]['extract']['*']
                     ).PHP_EOL.PHP_EOL.
-                        '[['.$title->getFullText().'|Consulter cette fiche]]';
+                        '[['.$title->getFullText().'|'.wfMessage('readthis')->parse().']]';
                     $wikitext = str_replace("\t\t\n", '', $wikitext);
                     $output->addWikiText($wikitext);
                     $output->addHTML('<div style="clear:both;"></div>');
                 }
             }
         }
-        $output->addWikiText('[[Special:Modifications récentes|Toutes les dernières modifications]]');
+        $output->addWikiText('[[Special:Modifications récentes|'.wfMessage('allrecentchanges')->parse().']]');
 
         //Derniers commentaires
         $output->addWikiText(
-            '== Derniers commentaires =='
+            '== '.wfMessage('recentcomments')->parse().' =='
         );
 
         $dbr = wfGetDB(DB_SLAVE);
@@ -340,12 +339,12 @@ class SpecialArchiHome extends \SpecialPage
             $output->addWikiText('=== '.preg_replace('/\(.*\)/', '', $title->getText()).' ==='.PHP_EOL);
             $output->addHTML($this->getCategoryTree($title));
             $wikitext = "''".strtok(wordwrap($row->Comment_Text, 170, '…'.PHP_EOL), PHP_EOL)."''".PHP_EOL.PHP_EOL.
-                '[['.$title->getFullText().'#Commentaires|Consulter le commentaire]]';
+                '[['.$title->getFullText().'#'.wfMessage('Comments')->parse().'|'.wfMessage('readthiscomment')->parse().']]';
             $output->addWikiText($wikitext);
             $output->addHTML('<div style="clear:both;"></div>');
         }
 
-        $output->addWikiText('[[Special:ArchiComments|Tous les derniers commentaires]]');
+        $output->addWikiText('[[Special:ArchiComments|'.wfMessage('allrecentcomments')->parse().']]');
     }
 
     /**
