@@ -79,6 +79,7 @@ class SpecialArchiHome extends \SpecialPage
         $focus = $this->getTextFromArticle('MediaWiki:ArchiHome-focus');
         if (isset($focus)) {
             $title = \Title::newFromText($focus);
+            $output->addHTML('<div class="spotlight-on">');
             $wikitext = '==Lumière sur…=='.PHP_EOL;
             $id = $title->getArticleID();
             if (isset($id) && $id > 0) {
@@ -96,7 +97,7 @@ class SpecialArchiHome extends \SpecialPage
 
                 $wikitext .= '=== '.preg_replace('/\(.*\)/', '', $title->getText()).' ==='.PHP_EOL;
                 $output->addWikiText($wikitext);
-                $output->addHTML($this->getCategoryTree($title));
+                $output->addHTML('<div class="breadcrumb">'.$this->getCategoryTree($title).'</div>');
                 $wikitext = '';
                 if (isset($extracts['query']['pages'][$id]['images'])) {
                     $wikitext .= '[['.$extracts['query']['pages'][$id]['images'][0]['title'].'|thumb|left|100px]]';
@@ -106,6 +107,7 @@ class SpecialArchiHome extends \SpecialPage
                 $output->addWikiText($wikitext);
                 $output->addHTML('<div style="clear:both;"></div>');
             }
+            $output->addHTML('</div>');
         }
 
         //Recherche
