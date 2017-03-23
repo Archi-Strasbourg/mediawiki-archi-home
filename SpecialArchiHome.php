@@ -111,28 +111,54 @@ class SpecialArchiHome extends \SpecialPage
         }
 
         //Recherche
+        $output->addHTML(
+        '<nav class="search-box color-panel color-panel-earth">
+            <div class="row">
+                <div class="column">');
         $output->addWikiText(
-            'Recherchez à travers nos {{PAGESINNAMESPACE:'.NS_ADDRESS.'}} '.
-            'adresses et {{PAGESINNAMESPACE:6}} photos&nbsp;:'
+                    '<h3 class="text-center search-title">Recherchez à travers nos {{PAGESINNAMESPACE:'.NS_ADDRESS.'}} '.
+                    'adresses et {{PAGESINNAMESPACE:6}} photos&nbsp;:</h3>'
         );
         $output->addHTML(
-            '<form id="searchform">
-				<input type="search" placeholder="Indiquez une adresse, un nom de rue ou de bâtiment" name="search">
-                <input type="hidden" name="title" value="Spécial:Recherche">
-                <input type="submit" class="searchButton" value="Lire">
-			</form>'
-        );
-        $output->addWikiText(
-            '{{#queryformlink:form=Recherche avancée|link text=Recherche avancée}}'
+                '</div>
+            </div>'
         );
 
+        $output->addHTML(
+            '<div class="row">
+                <div class="column large-7 large-offset-2">
+                    <form id="searchform">
+                        <div class="input-group">
+                            <input type="search" class="search-input input-group-field" placeholder="Indiquez une adresse, un nom de rue ou de bâtiment" name="search">
+                            <input type="hidden" name="title" value="Spécial:Recherche">
+                            <div class="input-group-button">
+                                <a class="button" class="form-submit">
+                                    <i class="material-icons">search</i>
+                                </a>
+                            </div>
+                        </div>
+        			</form>
+                </div>
+                <div class="column large-2 end">'
+        );
+        $output->addWikiText(
+                    '{{#queryformlink:form=Recherche avancée|link text=Recherche avancée}}'
+        );
+        $output->addHTML(
+                '</div>
+            </div>
+        </nav>');
+
+        $output->addHTML('<div class="association-block">');
         //Qui sommes-nous ?
         $intro = $this->getTextFromArticle('MediaWiki:ArchiHome-about');
         $introTitle = $this->getTextFromArticle('MediaWiki:ArchiHome-about-title');
         if (isset($intro)) {
             $wikitext = '== '.$introTitle.' =='.PHP_EOL.
             $intro.PHP_EOL;
+            $output->addHTML('<section class="archiwiki-intro">');
             $output->addWikiText($wikitext);
+            $output->addHTML('</section>');
         }
 
         //Actualités de l'association
@@ -168,11 +194,18 @@ class SpecialArchiHome extends \SpecialPage
             $wikitext .= $extracts['query']['pages'][$title->getArticleID()]['extract']['*'].PHP_EOL.PHP_EOL.
                 '[['.$title->getFullText().'|Lire la suite]]'.PHP_EOL.PHP_EOL.
                 '[[Special:ArchiBlog|Découvrir les autres actualités]]';
-            $output->addWikiText($wikitext);
-            $output->addHTML('<div style="clear:both;"></div>');
-        }
+            $output->addHTML('<section class="latest-news">');
+                $output->addWikiText($wikitext);
+                $output->addHTML('<div style="clear:both;"></div>');
+            $output->addHTML('</section>');
 
+        }
+        $output->addHTML('</div>'); // End of Association block
+
+        $output->addHTML('<div class="latest-block">');
         //Dernières modifications
+        $output->addHTML('<section class="latest-changes">');
+        
         $output->addWikiText(
             '== Dernières modifications =='
         );
@@ -249,6 +282,7 @@ class SpecialArchiHome extends \SpecialPage
                         ]
                     );
 
+                    $output->addHTML('<article class="latest-changes-recent-change">');
                     $wikitext = '=== '.preg_replace('/\(.*\)/', '', $title->getText()).' ==='.PHP_EOL;
                     $output->addWikiText($wikitext);
                     $wikitext = '';
@@ -265,13 +299,16 @@ class SpecialArchiHome extends \SpecialPage
                         '[['.$title->getFullText().'|Consulter cette fiche]]';
                     $wikitext = str_replace("\t\t\n", '', $wikitext);
                     $output->addWikiText($wikitext);
-                    $output->addHTML('<div style="clear:both;"></div>');
+                    $output->addHTML('<div style="clear:both;"></div></article>');
+
                 }
             }
         }
         $output->addWikiText('[[Special:Modifications récentes|Toutes les dernières modifications]]');
+        $output->addHTML('</section>');
 
         //Derniers commentaires
+        $output->addHTML('<section class="latest-comments">');
         $output->addWikiText(
             '== Derniers commentaires =='
         );
@@ -295,15 +332,23 @@ class SpecialArchiHome extends \SpecialPage
                 break;
             }
             $title = \Title::newFromId($row->Comment_Page_ID);
+            $output->addHTML('<div class="latest-comments-recent-comment">');
             $output->addWikiText('=== '.preg_replace('/\(.*\)/', '', $title->getText()).' ==='.PHP_EOL);
             $output->addHTML($this->getCategoryTree($title));
             $wikitext = "''".strtok(wordwrap($row->Comment_Text, 170, '…'.PHP_EOL), PHP_EOL)."''".PHP_EOL.PHP_EOL.
                 '[['.$title->getFullText().'#Commentaires|Consulter le commentaire]]';
             $output->addWikiText($wikitext);
             $output->addHTML('<div style="clear:both;"></div>');
+            $output->addHTML('</div>');
+
         }
 
         $output->addWikiText('[[Special:ArchiComments|Tous les derniers commentaires]]');
+        $output->addHTML('</section>');
+
+        $output->addHTML('</div>'); // End of Latest block
+
+
     }
 
     public function getGroupName()
