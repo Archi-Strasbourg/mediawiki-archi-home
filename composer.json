@@ -5,6 +5,12 @@
   "require": {
     "mediawiki/TextExtracts": "~1.26"
   },
+  "require-dev": {
+    "phpdocumentor/phpdocumentor": "~2.9.0"
+  },
+  "scripts": {
+    "doc": "./vendor/bin/phpdoc -f SpecialArchiHome.php -t docs"
+  },
   "repositories": [
     {
       "type": "composer",

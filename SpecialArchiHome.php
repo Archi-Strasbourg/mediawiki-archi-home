@@ -1,14 +1,30 @@
 <?php
+/**
+ * SpecialArchiHome class.
+ */
 
 namespace ArchiHome;
 
+/**
+ * SpecialPage Special:ArchiHome that displays the custom homepage.
+ */
 class SpecialArchiHome extends \SpecialPage
 {
+    /**
+     * SpecialArchiHome constructor.
+     */
     public function __construct()
     {
         parent::__construct('ArchiHome');
     }
 
+    /**
+     * Send a request to the MediaWiki API.
+     *
+     * @param array $options Request parameters
+     *
+     * @return array
+     */
     private function apiRequest($options)
     {
         $params = new \DerivativeRequest(
@@ -21,6 +37,13 @@ class SpecialArchiHome extends \SpecialPage
         return $api->getResult()->getResultData();
     }
 
+    /**
+     * Extract text content from an article.
+     *
+     * @param string $title Article title
+     *
+     * @return string
+     */
     private function getTextFromArticle($title)
     {
         $title = \Title::newFromText($title);
@@ -32,7 +55,14 @@ class SpecialArchiHome extends \SpecialPage
         }
     }
 
-    private static function parseTree($tree)
+    /**
+     * Parse a category tree.
+     *
+     * @param array $tree Category tree
+     *
+     * @return array Category list
+     */
+    private static function parseTree(array $tree)
     {
         $categories = [];
         foreach ($tree as $element => $parent) {
@@ -45,7 +75,14 @@ class SpecialArchiHome extends \SpecialPage
         return $categories;
     }
 
-    public static function getCategoryTree($title)
+    /**
+     * Get a category tree from an article.
+     *
+     * @param \Title $title Article title
+     *
+     * @return array Category tree
+     */
+    public static function getCategoryTree(\Title $title)
     {
         global $wgCountryCategory;
         $categories = self::parseTree($title->getParentCategoryTree());
@@ -67,6 +104,13 @@ class SpecialArchiHome extends \SpecialPage
         return $return;
     }
 
+    /**
+     * Display the special page.
+     *
+     * @param string $subPage
+     *
+     * @return void
+     */
     public function execute($subPage)
     {
         global $wgCountryCategory, $wgTitle;
@@ -82,7 +126,7 @@ class SpecialArchiHome extends \SpecialPage
         if (isset($focus)) {
             $title = \Title::newFromText($focus);
             $output->addHTML('<div class="spotlight-container"><div class="spotlight-on"><header class="spotlight-header">');
-            $wikitext = '==Lumière sur…=='.PHP_EOL;
+			$wikitext = '=='.wfMessage('featured')->parse().'=='.PHP_EOL;
             $id = $title->getArticleID();
             if (isset($id) && $id > 0) {
                 $extracts = $this->apiRequest(
@@ -106,7 +150,7 @@ class SpecialArchiHome extends \SpecialPage
                     $wikitext .= '[['.$extracts['query']['pages'][$id]['images'][0]['title'].'|thumb|left|100px]]';
                 }
                 $wikitext .= PHP_EOL.$extracts['query']['pages'][$id]['extract']['*'].PHP_EOL.PHP_EOL.
-                    '[['.$title.'|Découvrir cette fiche]]';
+                    '[['.$title.'|'.wfMessage('readthis')->parse().']]';
                 $output->addWikiText($wikitext);
                 $output->addHTML('<div style="clear:both;"></div>');
             }
@@ -122,20 +166,18 @@ class SpecialArchiHome extends \SpecialPage
                     <div class="row">
                         <div class="column">');
         $output->addWikiText(
-                            '<h3 class="text-center search-title">Recherchez à travers nos {{PAGESINNAMESPACE:'.NS_ADDRESS.'}} '.
-                            'adresses et {{PAGESINNAMESPACE:6}} photos&nbsp;:</h3>'
+			'<h3 class="text-center search-title">'.wfMessage('searchdesc', '{{PAGESINNAMESPACE:'.NS_ADDRESS.'}}', '{{PAGESINNAMESPACE:6}}')->parse().'</h3>';
         );
         $output->addHTML(
                         '</div>
                     </div>'
         );
-
-        $output->addHTML(
+$output->addHTML(
                     '<div class="row">
                         <div class="column large-7 large-offset-2">
                             <form id="searchform">
                                 <div class="input-group">
-                                    <input type="search" class="search-input input-group-field" placeholder="Indiquez une adresse, un nom de rue ou de bâtiment" name="search">
+                                    <input type="search" class="search-input input-group-field" placeholder="'.wfMessage('search-placeholder')->parse().'" name="search">
                                     <input type="hidden" name="title" value="Spécial:Recherche">
                                     <div class="input-group-button">
                                         <a class="button" class="form-submit">
@@ -147,8 +189,9 @@ class SpecialArchiHome extends \SpecialPage
                         </div>
                         <div class="column large-2 end">'
         );
+
         $output->addWikiText(
-                            '{{#queryformlink:form=Recherche avancée|link text=Recherche avancée}}'
+            '{{#queryformlink:form=Recherche avancée|link text='.wfMessage('advancedsearch')->parse().'}}'
         );
         $output->addHTML(
                         '</div>
@@ -196,20 +239,19 @@ class SpecialArchiHome extends \SpecialPage
                 ]
             );
 
-            $wikitext = '== Dernière actualité de de l\'association&nbsp;:<br/>'.$title->getText().' =='.PHP_EOL;
+            $wikitext = '== '.wfMessage('lastblog')->parse().'<br/>'.$title->getText().' =='.PHP_EOL;
             if (isset($extracts['query']['pages'][$title->getArticleID()]['images'])) {
                 $wikitext .= '[['.$extracts['query']['pages'][$title->getArticleID()]['images'][0]['title'].
                 '|thumb|left|100px]]';
             }
             $wikitext .= $extracts['query']['pages'][$title->getArticleID()]['extract']['*'].PHP_EOL.PHP_EOL.
-                '[['.$title->getFullText().'|Lire la suite]]'.PHP_EOL.PHP_EOL.
-                '[[Special:ArchiBlog|Découvrir les autres actualités]]';
-            $output->addHTML('<div class="latest-news-holder">');
+                '[['.$title->getFullText().'|'.wfMessage('readmore')->parse().']]'.PHP_EOL.PHP_EOL.
+                '[[Special:ArchiBlog|'.wfMessage('othernews')->parse().']]';
+			$output->addHTML('<div class="latest-news-holder">');
             $output->addHTML('<section class="latest-news" data-equalizer-watch>');
-                $output->addWikiText($wikitext);
-                $output->addHTML('<div style="clear:both;"></div>');
-            $output->addHTML('</section></div>');
-
+            $output->addWikiText($wikitext);
+            $output->addHTML('<div style="clear:both;"></div>');
+			$output->addHTML('</section></div>');
         }
         $output->addHTML('</div>'); // End of Association block
 
@@ -219,7 +261,7 @@ class SpecialArchiHome extends \SpecialPage
         $output->addHTML('<section class="latest-changes">');
         
         $output->addWikiText(
-            '== Dernières modifications =='
+            '== '.wfMessage('recentchanges')->parse().' =='
         );
 
         $addresses = $this->apiRequest(
@@ -309,7 +351,7 @@ class SpecialArchiHome extends \SpecialPage
                         '',
                         $extracts['query']['pages'][$id]['extract']['*']
                     ).PHP_EOL.PHP_EOL.
-                        '[['.$title->getFullText().'|Consulter cette fiche]]';
+                        '[['.$title->getFullText().'|'.wfMessage('readthis')->parse().']]';
                     $wikitext = str_replace("\t\t\n", '', $wikitext);
                     $output->addWikiText($wikitext);
                     $output->addHTML('<div style="clear:both;"></div></article></article>');
@@ -317,14 +359,14 @@ class SpecialArchiHome extends \SpecialPage
                 }
             }
         }
-        $output->addWikiText('[[Special:Modifications récentes|Toutes les dernières modifications]]');
-        $output->addHTML('</section></div>');
+        $output->addWikiText('[[Special:Modifications récentes|'.wfMessage('allrecentchanges')->parse().']]');
+		$output->addHTML('</section></div>');
 
         //Derniers commentaires
         $output->addHTML('<div class="latest-comments-container">');
         $output->addHTML('<section class="latest-comments">');
         $output->addWikiText(
-            '== Derniers commentaires =='
+            '== '.wfMessage('recentcomments')->parse().' =='
         );
 
         $dbr = wfGetDB(DB_SLAVE);
@@ -351,7 +393,7 @@ class SpecialArchiHome extends \SpecialPage
             $output->addWikiText('=== '.preg_replace('/\(.*\)/', '', $title->getText()).' ==='.PHP_EOL);
             $output->addHTML($this->getCategoryTree($title));
             $wikitext = "''".strtok(wordwrap($row->Comment_Text, 170, '…'.PHP_EOL), PHP_EOL)."''".PHP_EOL.PHP_EOL.
-                '[['.$title->getFullText().'#Commentaires|Consulter le commentaire]]';
+                '[['.$title->getFullText().'#'.wfMessage('Comments')->parse().'|'.wfMessage('readthiscomment')->parse().']]';
             $output->addWikiText($wikitext);
             $output->addHTML('<div style="clear:both;"></div>');
             $output->addHTML('</div></div>');
@@ -366,6 +408,11 @@ class SpecialArchiHome extends \SpecialPage
 
     }
 
+    /**
+     * Return the special page category.
+     *
+     * @return string
+     */
     public function getGroupName()
     {
         return 'pages';
