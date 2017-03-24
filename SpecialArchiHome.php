@@ -119,7 +119,7 @@ class SpecialArchiHome extends \SpecialPage
         $output = $this->getOutput();
         $this->setHeaders();
 
-        // Start heder row 
+        // Start heder row
         $output->addHTML('<div class="header-row">');
         //Lumière sur
         $focus = $this->getTextFromArticle('MediaWiki:ArchiHome-focus');
@@ -166,7 +166,7 @@ class SpecialArchiHome extends \SpecialPage
                     <div class="row">
                         <div class="column">');
         $output->addWikiText(
-			'<h3 class="text-center search-title">'.wfMessage('searchdesc', '{{PAGESINNAMESPACE:'.NS_ADDRESS.'}}', '{{PAGESINNAMESPACE:6}}')->parse().'</h3>';
+			'<h3 class="text-center search-title">'.wfMessage('searchdesc', '{{PAGESINNAMESPACE:'.NS_ADDRESS.'}}', '{{PAGESINNAMESPACE:6}}')->parse().'</h3>'
         );
         $output->addHTML(
                         '</div>
@@ -259,7 +259,7 @@ $output->addHTML(
         //Dernières modifications
         $output->addHTML('<div class="latest-changes-container">');
         $output->addHTML('<section class="latest-changes">');
-        
+
         $output->addWikiText(
             '== '.wfMessage('recentchanges')->parse().' =='
         );
