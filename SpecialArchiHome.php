@@ -166,13 +166,13 @@ class SpecialArchiHome extends \SpecialPage
                     <div class="row">
                         <div class="column">');
         $output->addWikiText(
-			'<h3 class="text-center search-title">'.wfMessage('searchdesc', '{{PAGESINNAMESPACE:'.NS_ADDRESS.'}}', '{{PAGESINNAMESPACE:6}}')->parse().'</h3>';
+			'<h3 class="text-center search-title">'.wfMessage('searchdesc', '{{PAGESINNAMESPACE:'.NS_ADDRESS.'}}', '{{PAGESINNAMESPACE:6}}')->parse().'</h3>'
         );
         $output->addHTML(
                         '</div>
                     </div>'
         );
-$output->addHTML(
+        $output->addHTML(
                     '<div class="row">
                         <div class="column large-7 large-offset-2">
                             <form id="searchform">
@@ -240,13 +240,15 @@ $output->addHTML(
             );
 
             $wikitext = '== '.wfMessage('lastblog')->parse().'<br/>'.$title->getText().' =='.PHP_EOL;
+            $wikitext .= '<div class="content-row">';
             if (isset($extracts['query']['pages'][$title->getArticleID()]['images'])) {
                 $wikitext .= '[['.$extracts['query']['pages'][$title->getArticleID()]['images'][0]['title'].
-                '|thumb|left|100px]]';
+                '|thumb|left|300px]]';
             }
-            $wikitext .= $extracts['query']['pages'][$title->getArticleID()]['extract']['*'].PHP_EOL.PHP_EOL.
+            $wikitext .= '<div class="latest-news-text">'.$extracts['query']['pages'][$title->getArticleID()]['extract']['*'].PHP_EOL.PHP_EOL.
                 '[['.$title->getFullText().'|'.wfMessage('readmore')->parse().']]'.PHP_EOL.PHP_EOL.
-                '[[Special:ArchiBlog|'.wfMessage('othernews')->parse().']]';
+                '[[Special:ArchiBlog|'.wfMessage('othernews')->parse().']]'.'</div>';
+            $wikitext .= '</div>';
 			$output->addHTML('<div class="latest-news-holder">');
             $output->addHTML('<section class="latest-news" data-equalizer-watch>');
             $output->addWikiText($wikitext);
