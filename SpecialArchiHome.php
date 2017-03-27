@@ -119,14 +119,14 @@ class SpecialArchiHome extends \SpecialPage
         $output = $this->getOutput();
         $this->setHeaders();
 
-        // Start heder row 
+        // Start heder row
         $output->addHTML('<div class="header-row">');
         //Lumière sur
         $focus = $this->getTextFromArticle('MediaWiki:ArchiHome-focus');
         if (isset($focus)) {
             $title = \Title::newFromText($focus);
             $output->addHTML('<div class="spotlight-container"><div class="spotlight-on"><header class="spotlight-header">');
-			$wikitext = '=='.wfMessage('featured')->parse().'=='.PHP_EOL;
+            $wikitext = '=='.wfMessage('featured')->parse().'=='.PHP_EOL;
             $id = $title->getArticleID();
             if (isset($id) && $id > 0) {
                 $extracts = $this->apiRequest(
@@ -160,45 +160,48 @@ class SpecialArchiHome extends \SpecialPage
 
         //Recherche
         $output->addHTML(
-        '<div class="search-box-row">
-            <div class="search-box-container">
-                <nav class="search-box color-panel color-panel-earth">
-                    <div class="row">
-                        <div class="column">');
+            '<div class="search-box-row">
+                <div class="search-box-container">
+                    <nav class="search-box color-panel color-panel-earth">
+                        <div class="row">
+                            <div class="column">'
+        );
         $output->addWikiText(
-			'<h3 class="text-center search-title">'.wfMessage('searchdesc', '{{PAGESINNAMESPACE:'.NS_ADDRESS.'}}', '{{PAGESINNAMESPACE:6}}')->parse().'</h3>'
+            '<h3 class="text-center search-title">'.wfMessage('searchdesc', '{{PAGESINNAMESPACE:'.NS_ADDRESS.'}}', '{{PAGESINNAMESPACE:6}}')->parse().'</h3>'
         );
         $output->addHTML(
-                        '</div>
-                    </div>'
+            '</div>
+        </div>'
         );
         $output->addHTML(
-                    '<div class="row">
-                        <div class="column large-7 large-offset-2">
-                            <form id="searchform">
-                                <div class="input-group">
-                                    <input type="search" class="search-input input-group-field" placeholder="'.wfMessage('search-placeholder')->parse().'" name="search">
-                                    <input type="hidden" name="title" value="Spécial:Recherche">
-                                    <div class="input-group-button">
-                                        <a class="button" class="form-submit">
-                                            <i class="material-icons">search</i>
-                                        </a>
-                                    </div>
-                                </div>
-                			</form>
+            '<div class="row">
+                <div class="column large-7 large-offset-2">
+                    <form id="searchform">
+                        <div class="input-group">
+                            <input type="search" class="search-input input-group-field" placeholder="'.wfMessage('search-placeholder')->parse().'" name="search">
+                            <input type="hidden" name="title" value="Spécial:Recherche">
+                            <div class="input-group-button">
+                                <a class="button" class="form-submit">
+                                    <i class="material-icons">search</i>
+                                </a>
+                            </div>
                         </div>
-                        <div class="column large-2 end">'
+        			</form>
+                </div>
+                <div class="column large-2 end">'
         );
 
         $output->addWikiText(
             '{{#queryformlink:form=Recherche avancée|link text='.wfMessage('advancedsearch')->parse().'}}'
         );
         $output->addHTML(
-                        '</div>
-                    </div>
-                </nav>
-            </div>
-        </div>');
+            '
+                            </div>
+                        </div>
+                    </nav>
+                </div>
+            </div>'
+        );
 
         $output->addHTML('<div class="association-block" data-equalizer data-equalize-on="medium">');
         //Qui sommes-nous ?
@@ -224,7 +227,6 @@ class SpecialArchiHome extends \SpecialPage
             ]
         );
         if (isset($news['query']['recentchanges'][0])) {
-
             $title = \Title::newFromText($news['query']['recentchanges'][0]['title']);
             $extracts = $this->apiRequest(
                 [
@@ -253,7 +255,7 @@ class SpecialArchiHome extends \SpecialPage
             $output->addHTML('<section class="latest-news" data-equalizer-watch>');
             $output->addWikiText($wikitext);
             $output->addHTML('<div style="clear:both;"></div>');
-			$output->addHTML('</section></div>');
+            $output->addHTML('</section></div>');
         }
         $output->addHTML('</div>'); // End of Association block
 
@@ -261,7 +263,7 @@ class SpecialArchiHome extends \SpecialPage
         //Dernières modifications
         $output->addHTML('<div class="latest-changes-container">');
         $output->addHTML('<section class="latest-changes">');
-        
+
         $output->addWikiText(
             '== '.wfMessage('recentchanges')->parse().' =='
         );
@@ -357,12 +359,11 @@ class SpecialArchiHome extends \SpecialPage
                     $wikitext = str_replace("\t\t\n", '', $wikitext);
                     $output->addWikiText($wikitext);
                     $output->addHTML('<div style="clear:both;"></div></article></article>');
-
                 }
             }
         }
         $output->addWikiText('[[Special:Modifications récentes|'.wfMessage('allrecentchanges')->parse().']]');
-		$output->addHTML('</section></div>');
+        $output->addHTML('</section></div>');
 
         //Derniers commentaires
         $output->addHTML('<div class="latest-comments-container">');
@@ -399,15 +400,12 @@ class SpecialArchiHome extends \SpecialPage
             $output->addWikiText($wikitext);
             $output->addHTML('<div style="clear:both;"></div>');
             $output->addHTML('</div></div>');
-
         }
 
         $output->addWikiText('[[Special:ArchiComments|Tous les derniers commentaires]]');
         $output->addHTML('</section></div>');
 
         $output->addHTML('</div>'); // End of Latest block
-
-
     }
 
     /**
