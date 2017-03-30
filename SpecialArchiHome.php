@@ -181,7 +181,7 @@ class SpecialArchiHome extends \SpecialPage
                             <input type="search" class="search-input input-group-field" placeholder="'.wfMessage('search-placeholder')->parse().'" name="search">
                             <input type="hidden" name="title" value="Spécial:Recherche">
                             <div class="input-group-button">
-                                <a class="button" class="form-submit">
+                                <a class="button form-submit">
                                     <i class="material-icons">search</i>
                                 </a>
                             </div>
