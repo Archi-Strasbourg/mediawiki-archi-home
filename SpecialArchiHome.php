@@ -251,7 +251,7 @@ class SpecialArchiHome extends \SpecialPage
                 '[['.$title->getFullText().'|'.wfMessage('readmore')->parse().']]'.PHP_EOL.PHP_EOL.
                 '[[Special:ArchiBlog|'.wfMessage('othernews')->parse().']]'.'</div>';
             $wikitext .= '</div>';
-			$output->addHTML('<div class="latest-news-holder">');
+            $output->addHTML('<div class="latest-news-holder">');
             $output->addHTML('<section class="latest-news" data-equalizer-watch>');
             $output->addWikiText($wikitext);
             $output->addHTML('<div style="clear:both;"></div>');
