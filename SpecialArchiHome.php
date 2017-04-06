@@ -350,11 +350,7 @@ class SpecialArchiHome extends \SpecialPage
                         $wikitext .= '[['.$images['query']['pages'][$mainTitleId]['images'][0]['title'].
                             '|thumb|left|100px]]';
                     }
-                    $wikitext .= PHP_EOL.preg_replace(
-                        '/��[0-9]/',
-                        '',
-                        $extracts['query']['pages'][$id]['extract']['*']
-                    ).PHP_EOL.PHP_EOL.
+                    $wikitext .= PHP_EOL.$extracts['query']['pages'][$id]['extract']['*'].PHP_EOL.PHP_EOL.
                         '[['.$title->getFullText().'|'.wfMessage('readthis')->parse().']]';
                     $wikitext = str_replace("\t\t\n", '', $wikitext);
                     $output->addWikiText($wikitext);
