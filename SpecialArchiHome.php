@@ -265,7 +265,7 @@ class SpecialArchiHome extends \SpecialPage
         $output->addHTML('<section class="latest-changes">');
 
         $output->addWikiText(
-            '== '.wfMessage('recentchanges')->parse().' =='
+            '== '.wfMessage('recentcontributions')->parse().' =='
         );
 
         $addresses = $this->apiRequest(
