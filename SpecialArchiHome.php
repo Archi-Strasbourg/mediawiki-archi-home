@@ -104,24 +104,9 @@ class SpecialArchiHome extends \SpecialPage
         return $return;
     }
 
-    /**
-     * Display the special page.
-     *
-     * @param string $subPage
-     *
-     * @return void
-     */
-    public function execute($subPage)
+    private function outputFocus()
     {
-        global $wgCountryCategory, $wgTitle;
-        $article = new \Article($wgTitle);
-        $languageCode = $article->getContext()->getLanguage()->getCode();
         $output = $this->getOutput();
-        $this->setHeaders();
-
-        // Start header row
-        $output->addHTML('<div class="header-row">');
-        //Lumière sur
         $focus = $this->getTextFromArticle('MediaWiki:ArchiHome-focus');
         if (isset($focus)) {
             $title = \Title::newFromText($focus);
@@ -163,8 +148,11 @@ class SpecialArchiHome extends \SpecialPage
             $output->addHTML('</div></div></div>');
         }
         $output->addHTML('</div>');
+    }
 
-        //Recherche
+    private function outputSearch()
+    {
+        $output = $this->getOutput();
         $output->addHTML(
             '<div class="search-box-row">
                 <div class="search-box-container">
@@ -208,9 +196,11 @@ class SpecialArchiHome extends \SpecialPage
                 </div>
             </div>'
         );
+    }
 
-        $output->addHTML('<div class="association-block" data-equalizer data-equalize-on="medium">');
-        //Qui sommes-nous ?
+    private function outputAbout()
+    {
+        $output = $this->getOutput();
         $intro = $this->getTextFromArticle('MediaWiki:ArchiHome-about');
         $introTitle = $this->getTextFromArticle('MediaWiki:ArchiHome-about-title');
         if (isset($intro)) {
@@ -221,8 +211,11 @@ class SpecialArchiHome extends \SpecialPage
             $output->addWikiText($wikitext);
             $output->addHTML('</section></div>');
         }
+    }
 
-        //Actualités de l'association
+    private function outputNews()
+    {
+        $output = $this->getOutput();
         $news = $this->apiRequest(
             [
                 'action'      => 'query',
@@ -263,10 +256,14 @@ class SpecialArchiHome extends \SpecialPage
             $output->addHTML('<div style="clear:both;"></div>');
             $output->addHTML('</section></div>');
         }
-        $output->addHTML('</div>'); // End of Association block
+    }
 
-        $output->addHTML('<div class="latest-block">');
-        //Dernières modifications
+    private function outputRecentChanges()
+    {
+        global $wgTitle;
+        $output = $this->getOutput();
+        $article = new \Article($wgTitle);
+        $languageCode = $article->getContext()->getLanguage()->getCode();
         $output->addHTML('<div class="latest-changes-container">');
         $output->addHTML('<section class="latest-changes">');
 
@@ -362,8 +359,11 @@ class SpecialArchiHome extends \SpecialPage
         }
         $output->addWikiText('[[Special:Modifications récentes|'.wfMessage('allrecentchanges')->parse().']]');
         $output->addHTML('</section></div>');
+    }
 
-        //Derniers commentaires
+    private function outputRecentComments()
+    {
+        $output = $this->getOutput();
         $output->addHTML('<div class="latest-comments-container">');
         $output->addHTML('<section class="latest-comments">');
         $output->addWikiText(
@@ -402,6 +402,48 @@ class SpecialArchiHome extends \SpecialPage
 
         $output->addWikiText('[[Special:ArchiComments|Tous les derniers commentaires]]');
         $output->addHTML('</section></div>');
+    }
+
+    /**
+     * Display the special page.
+     *
+     * @param string $subPage
+     *
+     * @return void
+     */
+    public function execute($subPage)
+    {
+        global $wgCountryCategory, $wgTitle;
+
+        $output = $this->getOutput();
+        $this->setHeaders();
+
+        // Start header row
+        $output->addHTML('<div class="header-row">');
+
+        //Lumière sur
+        $this->outputFocus();
+
+        //Recherche
+        $this->outputSearch();
+
+        $output->addHTML('<div class="association-block" data-equalizer data-equalize-on="medium">');
+
+        //Qui sommes-nous ?
+        $this->outputAbout();
+
+        //Actualités de l'association
+        $this->outputNews();
+
+        $output->addHTML('</div>'); // End of Association block
+
+        $output->addHTML('<div class="latest-block">');
+
+        //Dernières modifications
+        $this->outputRecentChanges();
+
+        //Derniers commentaires
+        $this->outputRecentComments();
 
         $output->addHTML('</div>'); // End of Latest block
     }
