@@ -142,7 +142,7 @@ class SpecialArchiHome extends \SpecialPage
                 );
                 $images = $this->apiRequest(
                     [
-                    'action'          => 'ask',
+                    'action'           => 'ask',
                     'query'            => '[['.$title.']]|?Image principale',
                     ]
                 );
@@ -339,7 +339,7 @@ class SpecialArchiHome extends \SpecialPage
 
                     $images = $this->apiRequest(
                         [
-                        'action'          => 'ask',
+                        'action'           => 'ask',
                         'query'            => '[['.$mainTitle.']]|?Image principale',
                         ]
                     );
