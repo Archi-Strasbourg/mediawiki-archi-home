@@ -132,12 +132,18 @@ class SpecialArchiHome extends \SpecialPage
                 $extracts = $this->apiRequest(
                     [
                     'action'          => 'query',
-                    'prop'            => 'extracts|images',
+                    'prop'            => 'extracts',
                     'titles'          => $title,
                     'explaintext'     => true,
                     'exchars'         => 120,
                     'exsectionformat' => 'plain',
                     'imlimit'         => 1,
+                    ]
+                );
+                $images = $this->apiRequest(
+                    [
+                    'action'          => 'ask',
+                    'query'            => '[['.$title.']]|?Image principale',
                     ]
                 );
 
@@ -146,8 +152,8 @@ class SpecialArchiHome extends \SpecialPage
                 $output->addHTML('<div class="breadcrumb">'.$this->getCategoryTree($title).'</div>');
                 $output->addHTML('</header><div class="spotlight-content">');
                 $wikitext = '';
-                if (isset($extracts['query']['pages'][$id]['images'])) {
-                    $wikitext .= '[['.$extracts['query']['pages'][$id]['images'][0]['title'].'|thumb|left|100px]]';
+                if (isset($images['query']['results'][(string) $title])) {
+                    $wikitext .= '[['.$images['query']['results'][(string) $title]['printouts']['Image principale'][0]['fulltext'].'|thumb|left|100px]]';
                 }
                 $wikitext .= PHP_EOL.$extracts['query']['pages'][$id]['extract']['*'].PHP_EOL.PHP_EOL.
                     '[['.$title.'|'.wfMessage('readthis')->parse().']]';
@@ -333,10 +339,8 @@ class SpecialArchiHome extends \SpecialPage
 
                     $images = $this->apiRequest(
                         [
-                            'action'  => 'query',
-                            'prop'    => 'images',
-                            'titles'  => $mainTitle,
-                            'imlimit' => 1,
+                        'action'          => 'ask',
+                        'query'            => '[['.$mainTitle.']]|?Image principale',
                         ]
                     );
 
@@ -346,8 +350,8 @@ class SpecialArchiHome extends \SpecialPage
                     $output->addWikiText($wikitext);
                     $wikitext = '';
                     $output->addHTML($this->getCategoryTree($mainTitle));
-                    if (isset($images['query']['pages'][$mainTitleId]['images'])) {
-                        $wikitext .= '[['.$images['query']['pages'][$mainTitleId]['images'][0]['title'].
+                    if (isset($images['query']['results'][(string) $mainTitle])) {
+                        $wikitext .= '[['.$images['query']['results'][(string) $mainTitle]['printouts']['Image principale'][0]['fulltext'].
                             '|thumb|left|100px]]';
                     }
                     $wikitext .= PHP_EOL.$extracts['query']['pages'][$id]['extract']['*'].PHP_EOL.PHP_EOL.
