@@ -307,7 +307,7 @@ class SpecialArchiHome extends \SpecialPage
                 }
             }
         }
-        $changes = [];
+
         $i = 0;
         foreach ($addresses['query']['recentchanges'] as $change) {
             if ($i >= 6) {
@@ -320,10 +320,8 @@ class SpecialArchiHome extends \SpecialPage
                     $id = $title->getArticleID();
                     if (isset($change['parent'])) {
                         $mainTitle = \Title::newFromText($change['parent']['title']);
-                        $mainTitleId = $mainTitle->getArticleID();
                     } else {
                         $mainTitle = $title;
-                        $mainTitleId = $id;
                     }
 
                     $extracts = $this->apiRequest(
