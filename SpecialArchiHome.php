@@ -359,7 +359,7 @@ class SpecialArchiHome extends \SpecialPage
                     $output->addWikiText($wikitext);
                     $wikitext = '';
                     $output->addHTML($this->getCategoryTree($mainTitle));
-                    if (isset($images['query']['results'][(string) $mainTitle])) {
+                    if (isset($images['query']['results'][(string) $mainTitle]) && !empty($images['query']['results'][(string) $mainTitle]['printouts']['Image principale'])) {
                         $wikitext .= '[['.$images['query']['results'][(string) $mainTitle]['printouts']['Image principale'][0]['fulltext'].
                             '|thumb|left|100px]]';
                     }
