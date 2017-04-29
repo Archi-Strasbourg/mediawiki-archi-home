@@ -287,7 +287,7 @@ class SpecialArchiHome extends \SpecialPage
             [
                 'action'      => 'query',
                 'list'        => 'recentchanges',
-                'rcnamespace' => NS_ADDRESS,
+                'rcnamespace' => NS_ADDRESS.'|'.NS_PERSON,
                 'rctoponly'   => true,
             ]
         );
