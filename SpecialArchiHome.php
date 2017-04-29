@@ -119,7 +119,7 @@ class SpecialArchiHome extends \SpecialPage
         $output = $this->getOutput();
         $this->setHeaders();
 
-        // Start heder row
+        // Start header row
         $output->addHTML('<div class="header-row">');
         //Lumière sur
         $focus = $this->getTextFromArticle('MediaWiki:ArchiHome-focus');
