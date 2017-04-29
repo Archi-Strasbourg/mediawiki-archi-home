@@ -258,6 +258,18 @@ class SpecialArchiHome extends \SpecialPage
         }
     }
 
+    private function sortChanges($a, $b)
+    {
+        $dateA = new \DateTime($a['timestamp']);
+        $dateB = new \DateTime($b['timestamp']);
+
+        if ($dateA == $dateB) {
+            return 0;
+        }
+
+        return ($dateA > $dateB) ? -1 : 1;
+    }
+
     private function outputRecentChanges()
     {
         global $wgTitle;
@@ -304,6 +316,8 @@ class SpecialArchiHome extends \SpecialPage
                 }
             }
         }
+        unset($addresses['query']['recentchanges']['_element']);
+        usort($addresses['query']['recentchanges'], [$this, 'sortChanges']);
 
         $i = 0;
         foreach ($addresses['query']['recentchanges'] as $change) {
