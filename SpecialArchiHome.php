@@ -137,7 +137,7 @@ class SpecialArchiHome extends \SpecialPage
                 $output->addHTML('<div class="breadcrumb">'.$this->getCategoryTree($title).'</div>');
                 $output->addHTML('</header><div class="spotlight-content">');
                 $wikitext = '';
-                if (isset($images['query']['results'][(string) $title])) {
+                if (isset($images['query']['results'][(string) $title]) && isset($images['query']['results'][(string) $title]['printouts']['Image principale'][0])) {
                     $wikitext .= '[['.$images['query']['results'][(string) $title]['printouts']['Image principale'][0]['fulltext'].'|thumb|left|100px]]';
                 }
                 $wikitext .= PHP_EOL.$extracts['query']['pages'][$id]['extract']['*'].PHP_EOL.PHP_EOL.
