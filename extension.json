@@ -1,6 +1,8 @@
 {
   "manifest_version": 1,
   "name": "ArchiHome",
+  "version": "0.1.1",
+  "license-name": "GPL-3.0",
   "author": "Pierre Rudloff",
   "url": "https://github.com/Archi-Strasbourg/mediawiki-archi-home",
   "description": "Custom homepage for archi-wiki.org",
