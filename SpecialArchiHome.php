@@ -5,7 +5,7 @@
 
 namespace ArchiHome;
 
-use \CategoryBreadcrumb\CategoryBreadcrumb;
+use CategoryBreadcrumb\CategoryBreadcrumb;
 
 /**
  * SpecialPage Special:ArchiHome that displays the custom homepage.
