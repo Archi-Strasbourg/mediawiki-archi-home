@@ -5,6 +5,8 @@
 
 namespace ArchiHome;
 
+use \CategoryBreadcrumb\CategoryBreadcrumb;
+
 /**
  * SpecialPage Special:ArchiHome that displays the custom homepage.
  */
@@ -56,26 +58,6 @@ class SpecialArchiHome extends \SpecialPage
     }
 
     /**
-     * Parse a category tree.
-     *
-     * @param array $tree Category tree
-     *
-     * @return array Category list
-     */
-    private static function parseTree(array $tree)
-    {
-        $categories = [];
-        foreach ($tree as $element => $parent) {
-            if (!empty($parent)) {
-                $categories = array_merge($categories, self::parseTree($parent));
-            }
-            $categories[] = $element;
-        }
-
-        return $categories;
-    }
-
-    /**
      * Get a category tree from an article.
      *
      * @param \Title $title Article title
@@ -88,19 +70,18 @@ class SpecialArchiHome extends \SpecialPage
         if ($title->getNamespace() == NS_ADDRESS_NEWS) {
             $title = \Title::newFromText($title->getText(), NS_ADDRESS);
         }
-        $categories = self::parseTree($title->getParentCategoryTree());
+        $parenttree = $title->getParentCategoryTree();
+        CategoryBreadcrumb::checkParentCategory($parenttree);
+        CategoryBreadcrumb::checkTree($parenttree);
+        $flatTree = CategoryBreadcrumb::getFlatTree($parenttree);
         $return = '';
-        if (isset($wgCountryCategory)
-            && isset($categories[0])
-            && preg_replace('/.+\:/', '', $categories[0]) == $wgCountryCategory
-        ) {
+        $categories = array_reverse($flatTree);
+        if (isset($categories[0])) {
+            $catTitle = \Title::newFromText($categories[0]);
+            $return .= \Linker::link($catTitle, htmlspecialchars($catTitle->getText()));
             if (isset($categories[1])) {
                 $catTitle = \Title::newFromText($categories[1]);
-                $return .= \Linker::link($catTitle, htmlspecialchars($catTitle->getText()));
-                if (isset($categories[2])) {
-                    $catTitle = \Title::newFromText($categories[2]);
-                    $return .= ' > '.\Linker::link($catTitle, htmlspecialchars($catTitle->getText()));
-                }
+                $return .= ' > '.\Linker::link($catTitle, htmlspecialchars($catTitle->getText()));
             }
         }
 
