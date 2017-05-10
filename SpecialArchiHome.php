@@ -387,7 +387,7 @@ class SpecialArchiHome extends \SpecialPage
         $dbr = wfGetDB(DB_SLAVE);
         $res = $dbr->select(
             ['Comments', 'page'],
-            ['Comment_Page_ID', 'Comment_Date', 'Comment_Text'],
+            ['Comment_Page_ID', 'Comment_Date', 'Comment_Text', 'Comment_Username'],
             'page_id IS NOT NULL',
             null,
             ['ORDER BY' => 'Comment_Date DESC'],
@@ -402,11 +402,14 @@ class SpecialArchiHome extends \SpecialPage
             if ($res->key() > 5) {
                 break;
             }
+            $user = \User::newFromName($row->Comment_Username);
             $title = \Title::newFromId($row->Comment_Page_ID);
+            $date = new \DateTime($row->Comment_Date);
             $output->addHTML('<div class="latest-comments-recent-comment-container">');
             $output->addHTML('<div class="latest-comments-recent-comment">');
             $output->addWikiText('=== '.preg_replace('/\(.*\)/', '', $title->getText()).' ==='.PHP_EOL);
             $output->addHTML($this->getCategoryTree($title));
+            $output->addWikiText('Par [[Utilisateur:'.$user->getName().'|'.$user->getName().']] le '.strftime('%x', $date->getTimestamp()));
             $wikitext = "''".strtok(wordwrap($row->Comment_Text, 170, '…'.PHP_EOL), PHP_EOL)."''".PHP_EOL.PHP_EOL.
                 '[['.$title->getFullText().'#'.wfMessage('Comments')->parse().'|'.wfMessage('readthiscomment')->parse().']]';
             $output->addWikiText($wikitext);
