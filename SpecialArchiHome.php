@@ -85,6 +85,9 @@ class SpecialArchiHome extends \SpecialPage
     public static function getCategoryTree(\Title $title)
     {
         global $wgCountryCategory;
+        if ($title->getNamespace() == NS_ADDRESS_NEWS) {
+            $title = \Title::newFromText($title->getText(), NS_ADDRESS);
+        }
         $categories = self::parseTree($title->getParentCategoryTree());
         $return = '';
         if (isset($wgCountryCategory)
