@@ -371,7 +371,7 @@ class SpecialArchiHome extends \SpecialPage
         $dbr = wfGetDB(DB_SLAVE);
         $res = $dbr->select(
             ['Comments', 'page'],
-            ['Comment_Page_ID', 'Comment_Date', 'Comment_Text', 'Comment_Username'],
+            ['CommentID', 'Comment_Page_ID', 'Comment_Date', 'Comment_Text', 'Comment_Username'],
             'page_id IS NOT NULL',
             null,
             ['ORDER BY' => 'Comment_Date DESC'],
@@ -395,7 +395,7 @@ class SpecialArchiHome extends \SpecialPage
             $output->addHTML($this->getCategoryTree($title));
             $output->addWikiText('Par [[Utilisateur:'.$user->getName().'|'.$user->getName().']] le '.strftime('%x', $date->getTimestamp()));
             $wikitext = "''".strtok(wordwrap($row->Comment_Text, 170, '…'.PHP_EOL), PHP_EOL)."''".PHP_EOL.PHP_EOL.
-                '[['.$title->getFullText().'#'.wfMessage('Comments')->parse().'|'.wfMessage('readthiscomment')->parse().']]';
+                '[['.$title->getFullText().'#comment-'.$row->CommentID.'|'.wfMessage('readthiscomment')->parse().']]';
             $output->addWikiText($wikitext);
             $output->addHTML('<div style="clear:both;"></div>');
             $output->addHTML('</div></div>');
