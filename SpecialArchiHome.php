@@ -12,6 +12,9 @@ use CategoryBreadcrumb\CategoryBreadcrumb;
  */
 class SpecialArchiHome extends \SpecialPage
 {
+
+    private $languageCode;
+
     /**
      * SpecialArchiHome constructor.
      */
@@ -256,10 +259,7 @@ class SpecialArchiHome extends \SpecialPage
 
     private function outputRecentChanges()
     {
-        global $wgTitle;
         $output = $this->getOutput();
-        $article = new \Article($wgTitle);
-        $languageCode = $article->getContext()->getLanguage()->getCode();
         $output->addHTML('<div class="latest-changes-container">');
         $output->addHTML('<section class="latest-changes">');
 
@@ -315,7 +315,7 @@ class SpecialArchiHome extends \SpecialPage
                 if ($titleLanguageCode == $title->getBaseText()) {
                     $titleLanguageCode = 'fr';
                 }
-                if ($titleLanguageCode == $languageCode) {
+                if ($titleLanguageCode == $this->languageCode) {
                     $i++;
                     $id = $title->getArticleID();
                     if (isset($change['parent'])) {
@@ -387,23 +387,31 @@ class SpecialArchiHome extends \SpecialPage
             ]
         );
 
+        $i = 0;
         foreach ($res as $row) {
-            if ($res->key() > 5) {
+            if ($i > 5) {
                 break;
             }
-            $user = \User::newFromName($row->Comment_Username);
             $title = \Title::newFromId($row->Comment_Page_ID);
-            $date = new \DateTime($row->Comment_Date);
-            $output->addHTML('<div class="latest-comments-recent-comment-container">');
-            $output->addHTML('<div class="latest-comments-recent-comment">');
-            $output->addWikiText('=== '.preg_replace('/\(.*\)/', '', $title->getText()).' ==='.PHP_EOL);
-            $output->addHTML($this->getCategoryTree($title));
-            $output->addWikiText('Par [[Utilisateur:'.$user->getName().'|'.$user->getName().']] le '.strftime('%x', $date->getTimestamp()));
-            $wikitext = "''".strtok(wordwrap($row->Comment_Text, 170, '…'.PHP_EOL), PHP_EOL)."''".PHP_EOL.PHP_EOL.
-                '[['.$title->getFullText().'#comment-'.$row->CommentID.'|'.wfMessage('readthiscomment')->parse().']]';
-            $output->addWikiText($wikitext);
-            $output->addHTML('<div style="clear:both;"></div>');
-            $output->addHTML('</div></div>');
+            $titleLanguageCode = $title->getSubpageText();
+            if ($titleLanguageCode == $title->getBaseText()) {
+                $titleLanguageCode = 'fr';
+            }
+            if ($titleLanguageCode == $this->languageCode) {
+                $user = \User::newFromName($row->Comment_Username);
+                $date = new \DateTime($row->Comment_Date);
+                $output->addHTML('<div class="latest-comments-recent-comment-container">');
+                $output->addHTML('<div class="latest-comments-recent-comment">');
+                $output->addWikiText('=== '.preg_replace('/\(.*\)/', '', $title->getBaseText()).' ==='.PHP_EOL);
+                $output->addHTML($this->getCategoryTree($title));
+                $output->addWikiText('Par [[Utilisateur:'.$user->getName().'|'.$user->getName().']] le '.strftime('%x', $date->getTimestamp()));
+                $wikitext = "''".strtok(wordwrap($row->Comment_Text, 170, '…'.PHP_EOL), PHP_EOL)."''".PHP_EOL.PHP_EOL.
+                    '[['.$title->getFullText().'#comment-'.$row->CommentID.'|'.wfMessage('readthiscomment')->parse().']]';
+                $output->addWikiText($wikitext);
+                $output->addHTML('<div style="clear:both;"></div>');
+                $output->addHTML('</div></div>');
+            }
+            $i++;
         }
 
         $output->addWikiText('[[Special:ArchiComments|Tous les derniers commentaires]]');
@@ -420,6 +428,8 @@ class SpecialArchiHome extends \SpecialPage
     public function execute($subPage)
     {
         global $wgCountryCategory, $wgTitle;
+        $article = new \Article($wgTitle);
+        $this->languageCode = $article->getContext()->getLanguage()->getCode();
 
         $output = $this->getOutput();
         $this->setHeaders();
