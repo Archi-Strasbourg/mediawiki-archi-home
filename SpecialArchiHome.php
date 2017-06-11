@@ -310,7 +310,12 @@ class SpecialArchiHome extends \SpecialPage
             }
             if (isset($change['title'])) {
                 $title = \Title::newFromText($change['title']);
-                if ($title->getPageLanguage()->getCode() == $languageCode) {
+                //Il faudra peut être utiliser $title->getPageLanguage()->getCode() quand Translate sera activé
+                $titleLanguageCode = $title->getSubpageText();
+                if ($titleLanguageCode == $title->getBaseText()) {
+                    $titleLanguageCode = 'fr';
+                }
+                if ($titleLanguageCode == $languageCode) {
                     $i++;
                     $id = $title->getArticleID();
                     if (isset($change['parent'])) {
@@ -339,7 +344,7 @@ class SpecialArchiHome extends \SpecialPage
 
                     $output->addHTML('<article class="latest-changes-recent-change-container">');
                     $output->addHTML('<article class="latest-changes-recent-change">');
-                    $wikitext = '=== '.preg_replace('/\(.*\)/', '', $title->getText()).' ==='.PHP_EOL;
+                    $wikitext = '=== '.preg_replace('/\(.*\)/', '', $title->getBaseText()).' ==='.PHP_EOL;
                     $output->addWikiText($wikitext);
                     $wikitext = '';
                     $output->addHTML($this->getCategoryTree($mainTitle));
