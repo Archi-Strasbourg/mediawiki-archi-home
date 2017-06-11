@@ -12,7 +12,6 @@ use CategoryBreadcrumb\CategoryBreadcrumb;
  */
 class SpecialArchiHome extends \SpecialPage
 {
-
     private $languageCode;
 
     /**
