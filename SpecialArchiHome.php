@@ -304,7 +304,7 @@ class SpecialArchiHome extends \SpecialPage
 
         $i = 0;
         foreach ($addresses['query']['recentchanges'] as $change) {
-            if ($i >= 5) {
+            if ($i >= 6) {
                 break;
             }
             if (isset($change['title'])) {
