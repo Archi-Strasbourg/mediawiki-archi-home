@@ -347,10 +347,15 @@ class SpecialArchiHome extends \SpecialPage
                     $output->addWikiText($wikitext);
                     $wikitext = '';
                     $output->addHTML($this->getCategoryTree($mainTitle));
+
                     if (isset($images['query']['results'][(string) $mainTitle]) && !empty($images['query']['results'][(string) $mainTitle]['printouts']['Image principale'])) {
                         $wikitext .= '[['.$images['query']['results'][(string) $mainTitle]['printouts']['Image principale'][0]['fulltext'].
                             '|thumb|left|100px]]';
                     }
+
+                    $date = new \DateTime($change['timestamp']);
+                    $output->addWikiText("''".strftime('%x', $date->getTimestamp())."''");
+
                     $wikitext .= PHP_EOL.$extracts['query']['pages'][$id]['extract']['*'].PHP_EOL.PHP_EOL.
                         '[['.$title->getFullText().'|'.wfMessage('readthis')->parse().']]';
                     $wikitext = str_replace("\t\t\n", '', $wikitext);
