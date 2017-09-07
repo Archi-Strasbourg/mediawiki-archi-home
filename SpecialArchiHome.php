@@ -272,6 +272,7 @@ class SpecialArchiHome extends \SpecialPage
                 'list'        => 'recentchanges',
                 'rcnamespace' => NS_ADDRESS.'|'.NS_PERSON,
                 'rctoponly'   => true,
+                'rcshow'      => '!redirect',
             ]
         );
         $news = $this->apiRequest(
@@ -280,6 +281,7 @@ class SpecialArchiHome extends \SpecialPage
                 'list'        => 'recentchanges',
                 'rcnamespace' => NS_ADDRESS_NEWS,
                 'rctoponly'   => true,
+                'rcshow'      => '!redirect',
             ]
         );
         foreach ($addresses['query']['recentchanges'] as &$address) {
