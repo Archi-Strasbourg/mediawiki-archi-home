@@ -96,6 +96,11 @@ class SpecialArchiHome extends \SpecialPage
         $focus = $this->getTextFromArticle('MediaWiki:ArchiHome-focus');
         if (isset($focus)) {
             $title = \Title::newFromText($focus);
+            if (!isset($title)) {
+                return;
+            }
+            // Start header row
+            $output->addHTML('<div class="header-row">');
             $output->addHTML('<div class="spotlight-container"><div class="spotlight-on"><header class="spotlight-header">');
             $wikitext = '=='.wfMessage('featured')->parse().'=='.PHP_EOL;
             $id = $title->getArticleID();
@@ -437,9 +442,6 @@ class SpecialArchiHome extends \SpecialPage
 
         $output = $this->getOutput();
         $this->setHeaders();
-
-        // Start header row
-        $output->addHTML('<div class="header-row">');
 
         //Lumière sur
         $this->outputFocus();
