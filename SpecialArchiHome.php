@@ -53,7 +53,7 @@ class SpecialArchiHome extends \SpecialPage
         $title = \Title::newFromText($title);
         $revision = \Revision::newFromId($title->getLatestRevID());
         if (isset($revision)) {
-            return $revision->getText();
+            return \ContentHandler::getContentText($revision->getContent(\Revision::RAW));
         } else {
             return;
         }
