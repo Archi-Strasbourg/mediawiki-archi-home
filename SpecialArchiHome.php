@@ -339,10 +339,10 @@ class SpecialArchiHome extends \SpecialPage
                         ]
                     );
 
-                    $images = $this->apiRequest(
+                    $properties = $this->apiRequest(
                         [
                         'action'           => 'ask',
-                        'query'            => '[['.$mainTitle.']]|?Image principale',
+                        'query'            => '[['.$mainTitle.']]|?Image principale|?Adresse complète',
                         ]
                     );
 
@@ -350,11 +350,14 @@ class SpecialArchiHome extends \SpecialPage
                     $output->addHTML('<article class="latest-changes-recent-change">');
                     $wikitext = '=== '.preg_replace('/\(.*\)/', '', $title->getBaseText()).' ==='.PHP_EOL;
                     $output->addWikiText($wikitext);
+                    if (isset($properties['query']['results'][(string) $mainTitle]) && !empty($properties['query']['results'][(string) $mainTitle]['printouts']['Adresse complète'])) {
+                        $output->addWikiText($properties['query']['results'][(string) $mainTitle]['printouts']['Adresse complète'][0]['fulltext']);
+                    }
                     $wikitext = '';
                     $output->addHTML($this->getCategoryTree($mainTitle));
 
-                    if (isset($images['query']['results'][(string) $mainTitle]) && !empty($images['query']['results'][(string) $mainTitle]['printouts']['Image principale'])) {
-                        $wikitext .= '[['.$images['query']['results'][(string) $mainTitle]['printouts']['Image principale'][0]['fulltext'].
+                    if (isset($properties['query']['results'][(string) $mainTitle]) && !empty($properties['query']['results'][(string) $mainTitle]['printouts']['Image principale'])) {
+                        $wikitext .= '[['.$properties['query']['results'][(string) $mainTitle]['printouts']['Image principale'][0]['fulltext'].
                             '|thumb|left|100px]]';
                     }
 
