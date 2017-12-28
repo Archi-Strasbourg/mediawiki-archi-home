@@ -213,7 +213,6 @@ class SpecialArchiHome extends \SpecialPage
                 'list'        => 'recentchanges',
                 'rcnamespace' => NS_NEWS,
                 'rclimit'     => 1,
-                'rctype'      => 'new',
             ]
         );
         if (isset($news['query']['recentchanges'][0])) {
@@ -221,20 +220,19 @@ class SpecialArchiHome extends \SpecialPage
             $extracts = $this->apiRequest(
                 [
                 'action'          => 'query',
-                'prop'            => 'extracts|images',
+                'prop'            => 'extracts|pageimages',
                 'titles'          => $news['query']['recentchanges'][0]['title'],
                 'explaintext'     => true,
                 'exintro'         => true,
                 'exchars'         => 250,
                 'exsectionformat' => 'plain',
-                'imlimit'         => 1,
                 ]
             );
 
             $wikitext = '== '.wfMessage('lastblog')->parse().'<br/>'.$title->getText().' =='.PHP_EOL;
             $wikitext .= '<div class="content-row">';
-            if (isset($extracts['query']['pages'][$title->getArticleID()]['images'])) {
-                $wikitext .= '[['.$extracts['query']['pages'][$title->getArticleID()]['images'][0]['title'].
+            if (isset($extracts['query']['pages'][$title->getArticleID()]['pageimage'])) {
+                $wikitext .= '[[File:'.$extracts['query']['pages'][$title->getArticleID()]['pageimage'].
                 '|thumb|left|300px]]';
             }
             $wikitext .= '<div class="latest-news-text">'.$extracts['query']['pages'][$title->getArticleID()]['extract']['*'].PHP_EOL.PHP_EOL.
