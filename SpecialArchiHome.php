@@ -143,6 +143,7 @@ class SpecialArchiHome extends \SpecialPage
 
     private function outputSearch()
     {
+        global $wgScript;
         $output = $this->getOutput();
         $output->addHTML(
             '<div class="search-box-row">
@@ -161,9 +162,9 @@ class SpecialArchiHome extends \SpecialPage
         $output->addHTML(
             '<div class="row">
                 <div class="column large-7 large-offset-2">
-                    <form id="searchform">
+                    <form id="searchform" action="'.$wgScript.'">
                         <div class="input-group">
-                            <input type="search" class="search-input input-group-field" placeholder="'.wfMessage('search-placeholder')->parse().'" name="search">
+                            <input type="search" class="mw-searchInput search-input input-group-field" placeholder="'.wfMessage('search-placeholder')->parse().'" name="search">
                             <input type="hidden" name="title" value="Spécial:Recherche">
                             <div class="input-group-button">
                                 <a class="button form-submit">
