@@ -432,6 +432,15 @@ class SpecialArchiHome extends \SpecialPage
     }
 
     /**
+     * Set the robot policy
+     *
+     * @return string
+     */
+    protected function getRobotPolicy() {
+        return 'index,follow';
+    }
+
+    /**
      * Display the special page.
      *
      * @param string $subPage
