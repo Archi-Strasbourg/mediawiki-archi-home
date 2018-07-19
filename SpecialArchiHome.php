@@ -432,11 +432,12 @@ class SpecialArchiHome extends \SpecialPage
     }
 
     /**
-     * Set the robot policy
+     * Set the robot policy.
      *
      * @return string
      */
-    protected function getRobotPolicy() {
+    protected function getRobotPolicy()
+    {
         return 'index,follow';
     }
 
