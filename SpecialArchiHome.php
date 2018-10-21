@@ -174,11 +174,13 @@ class SpecialArchiHome extends \SpecialPage
                         </div>
         			</form>
                 </div>
-                <div class="column large-2 end">'
+                <div class="column large-3 end">'
         );
 
         $output->addWikiText(
-            '{{#queryformlink:form=Recherche avancée|link text='.wfMessage('advancedsearch')->parse().'}}'
+            '{{#queryformlink:form=Recherche avancée|link text='.wfMessage('advancedsearch')->parse().'}}'.
+            '<br/>'.
+            '[[Carte globale|Recherche cartographique]]'
         );
         $output->addHTML(
             '
