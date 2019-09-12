@@ -180,7 +180,9 @@ class SpecialArchiHome extends \SpecialPage
         $output->addWikiText(
             '{{#queryformlink:form=Recherche avancée|link text='.wfMessage('advancedsearch')->parse().'}}'.
             '<br/>'.
-            '[[Carte globale|Recherche cartographique]]'
+            '[[Carte globale|Recherche cartographique]]'.
+            '<br/>'.
+            '[[Spécial:Nearby|À proximité]]'
         );
         $output->addHTML(
             '
