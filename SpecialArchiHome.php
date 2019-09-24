@@ -6,6 +6,15 @@
 namespace ArchiHome;
 
 use CategoryBreadcrumb\CategoryBreadcrumb;
+use DateTime;
+use Exception;
+use Linker;
+use MediaWiki\MediaWikiServices;
+use MWException;
+use Revision;
+use Title;
+use TextExtracts\ExtractFormatter;
+use ConfigException;
 
 /**
  * SpecialPage Special:ArchiHome that displays the custom homepage.
@@ -50,10 +59,10 @@ class SpecialArchiHome extends \SpecialPage
      */
     private function getTextFromArticle($title)
     {
-        $title = \Title::newFromText($title);
-        $revision = \Revision::newFromId($title->getLatestRevID());
+        $title = Title::newFromText($title);
+        $revision = Revision::newFromId($title->getLatestRevID());
         if (isset($revision)) {
-            return \ContentHandler::getContentText($revision->getContent(\Revision::RAW));
+            return \ContentHandler::getContentText($revision->getContent(Revision::RAW));
         } else {
             return;
         }
@@ -62,15 +71,14 @@ class SpecialArchiHome extends \SpecialPage
     /**
      * Get a category tree from an article.
      *
-     * @param \Title $title Article title
+     * @param Title $title Article title
      *
-     * @return array Category tree
+     * @return string Category tree
      */
-    public static function getCategoryTree(\Title $title)
+    public static function getCategoryTree(Title $title)
     {
-        global $wgCountryCategory;
         if ($title->getNamespace() == NS_ADDRESS_NEWS) {
-            $title = \Title::newFromText($title->getText(), NS_ADDRESS);
+            $title = Title::newFromText($title->getText(), NS_ADDRESS);
         }
         $parenttree = $title->getParentCategoryTree();
         CategoryBreadcrumb::checkParentCategory($parenttree);
@@ -79,11 +87,11 @@ class SpecialArchiHome extends \SpecialPage
         $return = '';
         $categories = array_reverse($flatTree);
         if (isset($categories[0])) {
-            $catTitle = \Title::newFromText($categories[0]);
-            $return .= \Linker::link($catTitle, htmlspecialchars($catTitle->getText()));
+            $catTitle = Title::newFromText($categories[0]);
+            $return .= Linker::link($catTitle, htmlspecialchars($catTitle->getText()));
             if (isset($categories[1])) {
-                $catTitle = \Title::newFromText($categories[1]);
-                $return .= ' > '.\Linker::link($catTitle, htmlspecialchars($catTitle->getText()));
+                $catTitle = Title::newFromText($categories[1]);
+                $return .= ' > '. Linker::link($catTitle, htmlspecialchars($catTitle->getText()));
             }
         }
 
@@ -95,7 +103,7 @@ class SpecialArchiHome extends \SpecialPage
         $output = $this->getOutput();
         $focus = $this->getTextFromArticle('MediaWiki:ArchiHome-focus');
         if (isset($focus)) {
-            $title = \Title::newFromText($focus);
+            $title = Title::newFromText($focus);
             if (!isset($title)) {
                 return;
             }
@@ -194,6 +202,9 @@ class SpecialArchiHome extends \SpecialPage
         );
     }
 
+    /**
+     * @throws MWException
+     */
     private function outputAbout()
     {
         $output = $this->getOutput();
@@ -221,7 +232,7 @@ class SpecialArchiHome extends \SpecialPage
             ]
         );
         if (isset($news['query']['recentchanges'][0])) {
-            $title = \Title::newFromText($news['query']['recentchanges'][0]['title']);
+            $title = Title::newFromText($news['query']['recentchanges'][0]['title']);
             $extracts = $this->apiRequest(
                 [
                 'action'          => 'query',
@@ -252,10 +263,16 @@ class SpecialArchiHome extends \SpecialPage
         }
     }
 
+    /**
+     * @param $a
+     * @param $b
+     * @return int
+     * @throws Exception
+     */
     private function sortChanges($a, $b)
     {
-        $dateA = new \DateTime($a['timestamp']);
-        $dateB = new \DateTime($b['timestamp']);
+        $dateA = new DateTime($a['timestamp']);
+        $dateB = new DateTime($b['timestamp']);
 
         if ($dateA == $dateB) {
             return 0;
@@ -264,6 +281,75 @@ class SpecialArchiHome extends \SpecialPage
         return ($dateA > $dateB) ? -1 : 1;
     }
 
+    /**
+     * @param $text
+     * @return string
+     * @throws ConfigException
+     */
+    private function convertText($text) {
+        $fmt = new ExtractFormatter(
+            $text,
+            TRUE,
+            MediaWikiServices::getInstance()
+                ->getConfigFactory()
+                ->makeConfig('textextracts')
+        );
+
+        $text = trim(
+            preg_replace(
+                "/" . ExtractFormatter::SECTION_MARKER_START . '(\d)' . ExtractFormatter::SECTION_MARKER_END . "(.*?)$/m",
+                '',
+                ExtractFormatter::getFirstChars($fmt->getText(), 120)
+            )
+        );
+        if (!empty($text)) {
+            $text .= wfMessage('ellipsis')->inContentLanguage()->text();
+        }
+
+        return $text;
+    }
+
+    /**
+     * @param Title $title
+     * @param $section
+     * @return mixed|string
+     * @throws ConfigException
+     */
+    private function getExtract(Title $title, $section) {
+        global $wgMemc;
+
+        $id = $title->getArticleID();
+
+        $key = wfMemcKey('archidescription', $id, $section, $title->getTouched());
+        $result = $wgMemc->get($key);
+
+        if (!$result) {
+            // On refait manuellement ce que fait TextExtracts pour pouvoir le faire sur la section 1.
+            $extracts = $this->apiRequest(
+                [
+                    'action' => 'parse',
+                    'pageid' => $id,
+                    'prop' => 'text',
+                    'section' => $section,
+                ]
+            );
+
+            $result = '';
+            if (isset($extracts['parse']['text'])) {
+                $result = $this->convertText($extracts['parse']['text']);
+            }
+
+            $wgMemc->set($key, $result);
+        }
+
+        return $result;
+    }
+
+    /**
+     * @throws ConfigException
+     * @throws MWException
+     * @throws Exception
+     */
     private function outputRecentChanges()
     {
         $output = $this->getOutput();
@@ -295,11 +381,11 @@ class SpecialArchiHome extends \SpecialPage
         foreach ($addresses['query']['recentchanges'] as &$address) {
             foreach ($news['query']['recentchanges'] as &$article) {
                 if (isset($address['title']) && isset($article['title'])) {
-                    $addressTitle = \Title::newFromText($address['title']);
-                    $articleTitle = \Title::newFromText($article['title']);
+                    $addressTitle = Title::newFromText($address['title']);
+                    $articleTitle = Title::newFromText($article['title']);
                     if ($addressTitle->getText() == $articleTitle->getText()) {
-                        $addressRev = \Revision::newFromId($addressTitle->getLatestRevID());
-                        $articleRev = \Revision::newFromId($articleTitle->getLatestRevID());
+                        $addressRev = Revision::newFromId($addressTitle->getLatestRevID());
+                        $articleRev = Revision::newFromId($articleTitle->getLatestRevID());
                         if ($articleRev->getTimestamp() > $addressRev->getTimestamp()) {
                             $parent = $address;
                             $address = $article;
@@ -317,32 +403,75 @@ class SpecialArchiHome extends \SpecialPage
             if ($i >= 6) {
                 break;
             }
+
             if (isset($change['title'])) {
-                $title = \Title::newFromText($change['title']);
+                $title = Title::newFromText($change['title']);
+
                 //Il faudra peut être utiliser $title->getPageLanguage()->getCode() quand Translate sera activé
                 $titleLanguageCode = $title->getSubpageText();
+
                 if ($titleLanguageCode == $title->getBaseText()) {
                     $titleLanguageCode = 'fr';
                 }
+
                 if ($titleLanguageCode == $this->languageCode) {
                     $i++;
                     $id = $title->getArticleID();
                     if (isset($change['parent'])) {
-                        $mainTitle = \Title::newFromText($change['parent']['title']);
+                        $mainTitle = Title::newFromText($change['parent']['title']);
                     } else {
                         $mainTitle = $title;
                     }
 
-                    $extracts = $this->apiRequest(
-                        [
-                            'action'          => 'query',
-                            'prop'            => 'extracts',
-                            'titles'          => $change['title'],
-                            'explaintext'     => true,
-                            'exchars'         => 120,
-                            'exsectionformat' => 'plain',
-                        ]
+                    $revision = Revision::newFromTitle($title);
+                    preg_match('#/\*(.*)\*/#', $revision->getComment(), $matches);
+                    $sectionName = str_replace(
+                        '[', '<sup>',
+                        str_replace(
+                            ']', '</sup>',
+                            trim($matches[1])
+                        )
                     );
+
+                    $extract = null;
+                    $sectionNumber = null;
+
+                    // On essaie d'avoir un extrait de la section modifiée.
+                    if (!empty($sectionName)) {
+                        $sections = $this->apiRequest(
+                            [
+                                'action' => 'parse',
+                                'page' => $change['title'],
+                                'prop' => 'sections',
+                            ]
+                        );
+
+                        foreach ($sections['parse']['sections'] as $section) {
+                            if ($section['line'] == $sectionName) {
+                                $sectionNumber = $section['index'];
+                            }
+                        }
+
+                        if (isset($sectionNumber)) {
+                            $extract = $this->getExtract($title, $sectionNumber);
+                        }
+                    }
+
+                    // Si on prend le début de l'article.
+                    if (!isset($extract)) {
+                        $extracts = $this->apiRequest(
+                            [
+                                'action' => 'query',
+                                'prop' => 'extracts',
+                                'titles' => $change['title'],
+                                'explaintext' => true,
+                                'exchars' => 120,
+                                'exsectionformat' => 'plain',
+                            ]
+                        );
+
+                        $extract = $extracts['query']['pages'][$id]['extract']['*'];
+                    }
 
                     $properties = $this->apiRequest(
                         [
@@ -358,19 +487,18 @@ class SpecialArchiHome extends \SpecialPage
                     if (isset($properties['query']['results'][(string) $mainTitle]) && !empty($properties['query']['results'][(string) $mainTitle]['printouts']['Adresse complète'])) {
                         $output->addWikiText($properties['query']['results'][(string) $mainTitle]['printouts']['Adresse complète'][0]['fulltext']);
                     }
-                    $wikitext = '';
                     $output->addHTML($this->getCategoryTree($mainTitle));
 
                     if (isset($properties['query']['results'][(string) $mainTitle]) && !empty($properties['query']['results'][(string) $mainTitle]['printouts']['Image principale'])) {
-                        $wikitext .= '[['.$properties['query']['results'][(string) $mainTitle]['printouts']['Image principale'][0]['fulltext'].
-                            '|thumb|left|100px]]';
+                        $output->addWikiText('[['.$properties['query']['results'][(string) $mainTitle]['printouts']['Image principale'][0]['fulltext'].
+                            '|thumb|left|100px]]');
                     }
 
-                    $date = new \DateTime($change['timestamp']);
+                    $date = new DateTime($change['timestamp']);
                     $output->addWikiText("''".strftime('%x', $date->getTimestamp())."''");
 
-                    $wikitext .= PHP_EOL.$extracts['query']['pages'][$id]['extract']['*'].PHP_EOL.PHP_EOL.
-                        '[['.$title->getFullText().'|'.wfMessage('readthis')->parse().']]';
+                    $output->addHTML('<p>'.$extract.'</p>');
+                    $wikitext ='[['.$title->getFullText().'|'.wfMessage('readthis')->parse().']]';
                     $wikitext = str_replace("\t\t\n", '', $wikitext);
                     $output->addWikiText($wikitext);
                     $output->addHTML('<div style="clear:both;"></div></article></article>');
@@ -409,14 +537,14 @@ class SpecialArchiHome extends \SpecialPage
             if ($i > 5) {
                 break;
             }
-            $title = \Title::newFromId($row->Comment_Page_ID);
+            $title = Title::newFromId($row->Comment_Page_ID);
             $titleLanguageCode = $title->getSubpageText();
             if ($titleLanguageCode == $title->getBaseText()) {
                 $titleLanguageCode = 'fr';
             }
             if ($titleLanguageCode == $this->languageCode) {
                 $user = \User::newFromName($row->Comment_Username);
-                $date = new \DateTime($row->Comment_Date);
+                $date = new DateTime($row->Comment_Date);
                 $output->addHTML('<div class="latest-comments-recent-comment-container">');
                 $output->addHTML('<div class="latest-comments-recent-comment">');
                 $output->addWikiText('=== '.preg_replace('/\(.*\)/', '', $title->getBaseText()).' ==='.PHP_EOL);
