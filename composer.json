@@ -1,9 +1,9 @@
 {
   "name": "archi-strasbourg/archi-home",
   "description": "Custom homepage for archi-wiki.org",
-  "license": "GPL-3.0",
+  "license": "GPL-3.0-only",
   "require": {
-    "mediawiki/TextExtracts": "~1.26"
+    "mediawiki/textextracts": "~1.26"
   },
   "require-dev": {
     "phpdocumentor/phpdocumentor": "~2.9.0"
