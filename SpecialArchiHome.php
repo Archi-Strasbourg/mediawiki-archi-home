@@ -208,7 +208,7 @@ class SpecialArchiHome extends \SpecialPage
     private function outputAbout()
     {
         $output = $this->getOutput();
-        $intro = $this->getTextFromArticle('MediaWiki:ArchiHome-about');
+        $intro = $this->getTextFromArticle('Archi-Wiki, c\'est quoi ?');
         $introTitle = $this->getTextFromArticle('MediaWiki:ArchiHome-about-title');
         if (isset($intro)) {
             $wikitext = '== '.$introTitle.' =='.PHP_EOL.
