@@ -5,21 +5,27 @@
 
 namespace ArchiHome;
 
+use ApiMain;
+use Article;
 use CategoryBreadcrumb\CategoryBreadcrumb;
+use ContentHandler;
 use DateTime;
+use DerivativeRequest;
 use Exception;
 use Linker;
 use MediaWiki\MediaWikiServices;
 use MWException;
 use Revision;
+use SpecialPage;
 use Title;
 use TextExtracts\ExtractFormatter;
 use ConfigException;
+use User;
 
 /**
  * SpecialPage Special:ArchiHome that displays the custom homepage.
  */
-class SpecialArchiHome extends \SpecialPage
+class SpecialArchiHome extends SpecialPage
 {
     private $languageCode;
 
@@ -40,11 +46,11 @@ class SpecialArchiHome extends \SpecialPage
      */
     private function apiRequest($options)
     {
-        $params = new \DerivativeRequest(
+        $params = new DerivativeRequest(
             $this->getRequest(),
             $options
         );
-        $api = new \ApiMain($params);
+        $api = new ApiMain($params);
         $api->execute();
 
         return $api->getResult()->getResultData();
@@ -62,7 +68,7 @@ class SpecialArchiHome extends \SpecialPage
         $title = Title::newFromText($title);
         $revision = Revision::newFromId($title->getLatestRevID());
         if (isset($revision)) {
-            return \ContentHandler::getContentText($revision->getContent(Revision::RAW));
+            return ContentHandler::getContentText($revision->getContent(Revision::RAW));
         } else {
             return;
         }
@@ -555,7 +561,7 @@ class SpecialArchiHome extends \SpecialPage
                 $titleLanguageCode = 'fr';
             }
             if ($titleLanguageCode == $this->languageCode) {
-                $user = \User::newFromName($row->Comment_Username);
+                $user = User::newFromName($row->Comment_Username);
                 $date = new DateTime($row->Comment_Date);
                 $output->addHTML('<div class="latest-comments-recent-comment-container">');
                 $output->addHTML('<div class="latest-comments-recent-comment">');
@@ -595,7 +601,7 @@ class SpecialArchiHome extends \SpecialPage
     public function execute($subPage)
     {
         global $wgCountryCategory, $wgTitle;
-        $article = new \Article($wgTitle);
+        $article = new Article($wgTitle);
         $this->languageCode = $article->getContext()->getLanguage()->getCode();
 
         $output = $this->getOutput();
