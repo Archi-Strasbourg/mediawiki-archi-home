@@ -205,21 +205,33 @@ class SpecialArchiHome extends \SpecialPage
     /**
      * @throws MWException
      */
-    private function outputAbout()
+    private function outputBriefs()
     {
         $output = $this->getOutput();
-        $intro = $this->getTextFromArticle('Archi-Wiki, c\'est quoi ?');
-        $introTitle = $this->getTextFromArticle('MediaWiki:ArchiHome-about-title');
-        if (isset($intro)) {
-            $wikitext = '== '.$introTitle.' =='.PHP_EOL.
-            $intro.PHP_EOL;
-            $output->addHTML('<div class="archiwiki-intro-holder">');
-            $output->addHTML('<section class="archiwiki-intro" data-equalizer-watch>');
-            $output->addWikiText($wikitext);
-            $output->addHTML('</section></div>');
-        }
+
+        $output->addHTML('<div class="archiwiki-intro-holder">');
+        $output->addHTML('<section class="archiwiki-intro" data-equalizer-watch>');
+        $output->addWikiText("== Fil d'actualité ==");
+        $output->addWikiText('{{#ask:
+            [[Brève:+]]
+            |?Date de publication#ISO
+            |?URL
+            |format=ul
+            |template=Affichage brève
+            |link=none
+            |sort=Date de publication
+            |order=desc
+            |limit=5
+            }}
+        ');
+        $output->addWikiText("[[Fil d'actualité|" . wfMessage('allbriefs')->parse() . ']]');
+        $output->addHTML('<div style="clear:both;"></div>');
+        $output->addHTML('</section></div>');
     }
 
+    /**
+     * @throws MWException
+     */
     private function outputNews()
     {
         $output = $this->getOutput();
@@ -597,11 +609,11 @@ class SpecialArchiHome extends \SpecialPage
 
         $output->addHTML('<div class="association-block" data-equalizer data-equalize-on="medium">');
 
-        //Qui sommes-nous ?
-        $this->outputAbout();
-
-        //Actualités de l'association
+        // Éditoriaux
         $this->outputNews();
+
+        // Brèves
+        $this->outputBriefs();
 
         $output->addHTML('</div>'); // End of Association block
 
