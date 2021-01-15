@@ -422,7 +422,7 @@ class SpecialArchiHome extends SpecialPage
                 break;
             }
 
-            if (isset($change['title'])) {
+            if (isset($change['title']) && $change['title'] != 'Adresse:Bac à sable') {
                 $title = Title::newFromText($change['title']);
 
                 //Il faudra peut être utiliser $title->getPageLanguage()->getCode() quand Translate sera activé
