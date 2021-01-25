@@ -380,20 +380,22 @@ class SpecialArchiHome extends SpecialPage
 
         $addresses = $this->apiRequest(
             [
-                'action'      => 'query',
-                'list'        => 'recentchanges',
-                'rcnamespace' => NS_ADDRESS.'|'.NS_PERSON,
-                'rctoponly'   => true,
-                'rcshow'      => '!redirect',
+                'action' => 'query',
+                'list' => 'recentchanges',
+                'rcnamespace' => NS_ADDRESS . '|' . NS_PERSON,
+                'rctoponly' => true,
+                'rcshow' => '!redirect',
+                'rclimit' => 50
             ]
         );
         $news = $this->apiRequest(
             [
-                'action'      => 'query',
-                'list'        => 'recentchanges',
+                'action' => 'query',
+                'list' => 'recentchanges',
                 'rcnamespace' => NS_ADDRESS_NEWS,
-                'rctoponly'   => true,
-                'rcshow'      => '!redirect',
+                'rctoponly' => true,
+                'rcshow' => '!redirect',
+                'rclimit' => 50
             ]
         );
         foreach ($addresses['query']['recentchanges'] as &$address) {
