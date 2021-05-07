@@ -509,42 +509,45 @@ class SpecialArchiHome extends SpecialPage
                     $output->addHTML('<article class="latest-changes-recent-change-container">');
                     $output->addHTML('<article class="latest-changes-recent-change">');
                     $wikitext = '=== '.preg_replace('/\(.*\)/', '', $title->getBaseText()).' ==='.PHP_EOL;
-                    $output->addWikiText($wikitext);
+                    $output->addWikiTextAsContent($wikitext);
                     if (isset($properties['query']['results'][(string) $mainTitle]) && !empty($properties['query']['results'][(string) $mainTitle]['printouts']['Adresse complète'])) {
-                        $output->addWikiText($properties['query']['results'][(string) $mainTitle]['printouts']['Adresse complète'][0]['fulltext']);
+                        $output->addWikiTextAsContent($properties['query']['results'][(string) $mainTitle]['printouts']['Adresse complète'][0]['fulltext']);
                     }
                     $output->addHTML($this->getCategoryTree($mainTitle));
 
                     if (isset($properties['query']['results'][(string) $mainTitle]) && !empty($properties['query']['results'][(string) $mainTitle]['printouts']['Image principale'])) {
-                        $output->addWikiText('[['.$properties['query']['results'][(string) $mainTitle]['printouts']['Image principale'][0]['fulltext'].
+                        $output->addWikiTextAsContent('[['.$properties['query']['results'][(string) $mainTitle]['printouts']['Image principale'][0]['fulltext'].
                             '|thumb|left|100px]]');
                     }
 
                     $date = new DateTime($change['timestamp']);
-                    $output->addWikiText("''".strftime('%x', $date->getTimestamp())."''");
+                    $output->addWikiTextAsContent("''".strftime('%x', $date->getTimestamp())."''");
 
                     $output->addHTML('<p>'.$extract.'</p>');
                     $wikitext ='[['.$title->getFullText().'|'.wfMessage('readthis')->parse().']]';
                     $wikitext = str_replace("\t\t\n", '', $wikitext);
-                    $output->addWikiText($wikitext);
+                    $output->addWikiTextAsInterface($wikitext);
                     $output->addHTML('<div style="clear:both;"></div></article></article>');
                 }
             }
         }
-        $output->addWikiText('[[Special:Modifications récentes|'.wfMessage('allrecentchanges')->parse().']]');
+        $output->addWikiTextAsInterface('[[Special:Modifications récentes|'.wfMessage('allrecentchanges')->parse().']]');
         $output->addHTML('</section></div>');
     }
 
+    /**
+     * @throws MWException
+     */
     private function outputRecentComments()
     {
         $output = $this->getOutput();
         $output->addHTML('<div class="latest-comments-container">');
         $output->addHTML('<section class="latest-comments">');
-        $output->addWikiText(
+        $output->addWikiTextAsInterface(
             '== '.wfMessage('recentcomments')->parse().' =='
         );
 
-        $dbr = wfGetDB(DB_SLAVE);
+        $dbr = wfGetDB(DB_REPLICA);
         $res = $dbr->select(
             ['Comments', 'page'],
             ['CommentID', 'Comment_Page_ID', 'Comment_Date', 'Comment_Text', 'Comment_Username'],
@@ -573,19 +576,19 @@ class SpecialArchiHome extends SpecialPage
                 $date = new DateTime($row->Comment_Date);
                 $output->addHTML('<div class="latest-comments-recent-comment-container">');
                 $output->addHTML('<div class="latest-comments-recent-comment">');
-                $output->addWikiText('=== '.preg_replace('/\(.*\)/', '', $title->getBaseText()).' ==='.PHP_EOL);
+                $output->addWikiTextAsContent('=== '.preg_replace('/\(.*\)/', '', $title->getBaseText()).' ==='.PHP_EOL);
                 $output->addHTML($this->getCategoryTree($title));
-                $output->addWikiText('Par [[Utilisateur:'.$user->getName().'|'.$user->getName().']] le '.strftime('%x', $date->getTimestamp()));
+                $output->addWikiTextAsContent('Par [[Utilisateur:'.$user->getName().'|'.$user->getName().']] le '.strftime('%x', $date->getTimestamp()));
                 $wikitext = "''".strtok(wordwrap($row->Comment_Text, 170, '…'.PHP_EOL), PHP_EOL)."''".PHP_EOL.PHP_EOL.
                     '[['.$title->getFullText().'#comment-'.$row->CommentID.'|'.wfMessage('readthiscomment')->parse().']]';
-                $output->addWikiText($wikitext);
+                $output->addWikiTextAsInterface($wikitext);
                 $output->addHTML('<div style="clear:both;"></div>');
                 $output->addHTML('</div></div>');
             }
             $i++;
         }
 
-        $output->addWikiText('[[Special:ArchiComments|Tous les derniers commentaires]]');
+        $output->addWikiTextAsInterface('[[Special:ArchiComments|Tous les derniers commentaires]]');
         $output->addHTML('</section></div>');
     }
 
