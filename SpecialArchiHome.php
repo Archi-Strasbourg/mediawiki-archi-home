@@ -104,6 +104,9 @@ class SpecialArchiHome extends SpecialPage
         return $return;
     }
 
+    /**
+     * @throws MWException
+     */
     private function outputFocus()
     {
         $output = $this->getOutput();
@@ -123,11 +126,11 @@ class SpecialArchiHome extends SpecialPage
                     [
                     'action'          => 'query',
                     'prop'            => 'extracts',
-                    'titles'          => $title,
+                    'titles'          => $title->getText(),
                     'explaintext'     => true,
                     'exchars'         => 120,
                     'exsectionformat' => 'plain',
-                    'imlimit'         => 1,
+                    'exlimit'         => 1,
                     ]
                 );
                 $images = $this->apiRequest(
@@ -138,7 +141,7 @@ class SpecialArchiHome extends SpecialPage
                 );
 
                 $wikitext .= '=== '.preg_replace('/\(.*\)/', '', $title->getText()).' ==='.PHP_EOL;
-                $output->addWikiText($wikitext);
+                $output->addWikiTextAsContent($wikitext);
                 $output->addHTML('<div class="breadcrumb">'.$this->getCategoryTree($title).'</div>');
                 $output->addHTML('</header><div class="spotlight-content">');
                 $wikitext = '';
@@ -147,7 +150,7 @@ class SpecialArchiHome extends SpecialPage
                 }
                 $wikitext .= PHP_EOL.$extracts['query']['pages'][$id]['extract']['*'].PHP_EOL.PHP_EOL.
                     '[['.$title.'|'.wfMessage('readthis')->parse().']]';
-                $output->addWikiText($wikitext);
+                $output->addWikiTextAsContent($wikitext);
                 $output->addHTML('<div style="clear:both;"></div>');
             }
             $output->addHTML('</div></div></div>');
@@ -155,6 +158,9 @@ class SpecialArchiHome extends SpecialPage
         $output->addHTML('</div>');
     }
 
+    /**
+     * @throws MWException
+     */
     private function outputSearch()
     {
         global $wgScript;
@@ -166,7 +172,7 @@ class SpecialArchiHome extends SpecialPage
                         <div class="row">
                             <div class="column">'
         );
-        $output->addWikiText(
+        $output->addWikiTextAsInterface(
             '<h3 class="text-center search-title">'.wfMessage('searchdesc', '{{PAGESINNAMESPACE:'.NS_ADDRESS.'}}', '{{PAGESINNAMESPACE:6}}')->parse().'</h3>'
         );
         $output->addHTML(
@@ -191,7 +197,7 @@ class SpecialArchiHome extends SpecialPage
                 <div class="column large-3 end">'
         );
 
-        $output->addWikiText(
+        $output->addWikiTextAsInterface(
             '{{#queryformlink:form=Recherche avancée|link text='.wfMessage('advancedsearch')->parse().'}}'.
             '<br/>'.
             '[[Carte globale|Recherche cartographique]]'.
@@ -217,8 +223,8 @@ class SpecialArchiHome extends SpecialPage
 
         $output->addHTML('<div class="archiwiki-intro-holder">');
         $output->addHTML('<section class="archiwiki-intro" data-equalizer-watch>');
-        $output->addWikiText("== Fil d'actualité ==");
-        $output->addWikiText('{{#ask:
+        $output->addWikiTextAsInterface("== Fil d'actualité ==");
+        $output->addWikiTextAsContent('{{#ask:
             [[Brève:+]]
             |?Date de publication#ISO
             |?URL
@@ -230,7 +236,7 @@ class SpecialArchiHome extends SpecialPage
             |limit=5
             }}
         ');
-        $output->addWikiText("[[Fil d'actualité|" . wfMessage('allbriefs')->parse() . ']]');
+        $output->addWikiTextAsInterface("[[Fil d'actualité|" . wfMessage('allbriefs')->parse() . ']]');
         $output->addHTML('<div style="clear:both;"></div>');
         $output->addHTML('</section></div>');
     }
@@ -275,7 +281,7 @@ class SpecialArchiHome extends SpecialPage
             $wikitext .= '</div>';
             $output->addHTML('<div class="latest-news-holder">');
             $output->addHTML('<section class="latest-news" data-equalizer-watch>');
-            $output->addWikiText($wikitext);
+            $output->addWikiTextAsContent($wikitext);
             $output->addHTML('<div style="clear:both;"></div>');
             $output->addHTML('</section></div>');
         }
@@ -374,7 +380,7 @@ class SpecialArchiHome extends SpecialPage
         $output->addHTML('<div class="latest-changes-container">');
         $output->addHTML('<section class="latest-changes">');
 
-        $output->addWikiText(
+        $output->addWikiTextAsInterface(
             '== '.wfMessage('recentcontributions')->parse().' =='
         );
 
