@@ -13,10 +13,10 @@ use DateTime;
 use DerivativeRequest;
 use Exception;
 use Linker;
-use MediaWiki\MediaWikiServices;
 use MWException;
 use Revision;
 use SpecialPage;
+use TextExtracts\TextTruncator;
 use Title;
 use TextExtracts\ExtractFormatter;
 use ConfigException;
@@ -310,20 +310,20 @@ class SpecialArchiHome extends SpecialPage
      * @return string
      * @throws ConfigException
      */
-    private function convertText($text) {
+    private function convertText($text): string
+    {
         $fmt = new ExtractFormatter(
             $text,
             TRUE,
-            MediaWikiServices::getInstance()
-                ->getConfigFactory()
-                ->makeConfig('textextracts')
         );
+
+        $truncator = new TextTruncator(false);
 
         $text = trim(
             preg_replace(
                 "/" . ExtractFormatter::SECTION_MARKER_START . '(\d)' . ExtractFormatter::SECTION_MARKER_END . "(.*?)$/m",
                 '',
-                ExtractFormatter::getFirstChars($fmt->getText(), 120)
+                $truncator->getFirstChars($fmt->getText(), 120)
             )
         );
         if (!empty($text)) {
