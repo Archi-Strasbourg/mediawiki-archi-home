@@ -550,7 +550,7 @@ class SpecialArchiHome extends SpecialPage
         $dbr = wfGetDB(DB_REPLICA);
         $res = $dbr->select(
             ['Comments', 'page'],
-            ['CommentID', 'Comment_Page_ID', 'Comment_Date', 'Comment_Text', 'Comment_Username'],
+            ['CommentID', 'Comment_Page_ID', 'Comment_Date', 'Comment_Text', 'Comment_actor'],
             'page_id IS NOT NULL',
             null,
             ['ORDER BY' => 'Comment_Date DESC'],
@@ -572,7 +572,7 @@ class SpecialArchiHome extends SpecialPage
                 $titleLanguageCode = 'fr';
             }
             if ($titleLanguageCode == $this->languageCode) {
-                $user = User::newFromName($row->Comment_Username);
+                $user = User::newFromActorId($row->Comment_actor);
                 $date = new DateTime($row->Comment_Date);
                 $output->addHTML('<div class="latest-comments-recent-comment-container">');
                 $output->addHTML('<div class="latest-comments-recent-comment">');
