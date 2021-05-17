@@ -148,8 +148,10 @@ class SpecialArchiHome extends SpecialPage
                 if (isset($images['query']['results'][(string) $title]) && isset($images['query']['results'][(string) $title]['printouts']['Image principale'][0])) {
                     $wikitext .= '[['.$images['query']['results'][(string) $title]['printouts']['Image principale'][0]['fulltext'].'|thumb|left|100px]]';
                 }
-                $wikitext .= PHP_EOL.$extracts['query']['pages'][$id]['extract']['*'].PHP_EOL.PHP_EOL.
-                    '[['.$title.'|'.wfMessage('readthis')->parse().']]';
+                if (isset($extracts['query']['pages'][$id])) {
+                    $wikitext .= PHP_EOL . $extracts['query']['pages'][$id]['extract']['*'] . PHP_EOL . PHP_EOL .
+                        '[[' . $title . '|' . wfMessage('readthis')->parse() . ']]';
+                }
                 $output->addWikiTextAsContent($wikitext);
                 $output->addHTML('<div style="clear:both;"></div>');
             }
@@ -451,13 +453,15 @@ class SpecialArchiHome extends SpecialPage
 
                     $revision = Revision::newFromTitle($title);
                     preg_match('#/\*(.*)\*/#', $revision->getComment(), $matches);
-                    $sectionName = str_replace(
-                        '[', '<sup>',
-                        str_replace(
-                            ']', '</sup>',
-                            trim($matches[1])
-                        )
-                    );
+                    if (isset($matches[1])) {
+                        $sectionName = str_replace(
+                            '[', '<sup>',
+                            str_replace(
+                                ']', '</sup>',
+                                trim($matches[1])
+                            )
+                        );
+                    }
 
                     $extract = null;
                     $sectionNumber = null;
@@ -473,7 +477,7 @@ class SpecialArchiHome extends SpecialPage
                         );
 
                         foreach ($sections['parse']['sections'] as $section) {
-                            if ($section['line'] == $sectionName) {
+                            if (isset($section['line']) && $section['line'] == $sectionName) {
                                 $sectionNumber = $section['index'];
                             }
                         }
