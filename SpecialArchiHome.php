@@ -126,7 +126,7 @@ class SpecialArchiHome extends SpecialPage
                     [
                     'action'          => 'query',
                     'prop'            => 'extracts',
-                    'titles'          => $title->getText(),
+                    'titles'          => $title->getFullText(),
                     'explaintext'     => true,
                     'exchars'         => 120,
                     'exsectionformat' => 'plain',
@@ -612,6 +612,7 @@ class SpecialArchiHome extends SpecialPage
      * @param string $subPage
      *
      * @return void
+     * @throws MWException
      */
     public function execute($subPage)
     {
