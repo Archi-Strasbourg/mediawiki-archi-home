@@ -13,8 +13,10 @@ use DateTime;
 use DerivativeRequest;
 use Exception;
 use Linker;
+use MediaWiki\MediaWikiServices;
+use MediaWiki\Revision\RevisionRecord;
+use MediaWiki\Revision\SlotRecord;
 use MWException;
-use Revision;
 use SpecialPage;
 use TextExtracts\TextTruncator;
 use Title;
@@ -62,15 +64,16 @@ class SpecialArchiHome extends SpecialPage
      * @param string $title Article title
      *
      * @return string
+     * @throws MWException
      */
-    private function getTextFromArticle($title)
+    private function getTextFromArticle(string $title): string
     {
         $title = Title::newFromText($title);
-        $revision = Revision::newFromId($title->getLatestRevID());
+        $revision = MediaWikiServices::getInstance()->getRevisionLookup()->getRevisionById($title->getLatestRevID());
         if (isset($revision)) {
-            return ContentHandler::getContentText($revision->getContent(Revision::RAW));
+            return ContentHandler::getContentText($revision->getContent(SlotRecord::MAIN, RevisionRecord::RAW));
         } else {
-            return;
+            return '';
         }
     }
 
@@ -412,8 +415,9 @@ class SpecialArchiHome extends SpecialPage
                     $addressTitle = Title::newFromText($address['title']);
                     $articleTitle = Title::newFromText($article['title']);
                     if ($addressTitle->getText() == $articleTitle->getText()) {
-                        $addressRev = Revision::newFromId($addressTitle->getLatestRevID());
-                        $articleRev = Revision::newFromId($articleTitle->getLatestRevID());
+                        $revisionLookup = MediaWikiServices::getInstance()->getRevisionLookup();
+                        $addressRev = $revisionLookup->getRevisionById($addressTitle->getLatestRevID());
+                        $articleRev = $revisionLookup->getRevisionById($articleTitle->getLatestRevID());
                         if ($articleRev->getTimestamp() > $addressRev->getTimestamp()) {
                             $parent = $address;
                             $address = $article;
@@ -451,8 +455,8 @@ class SpecialArchiHome extends SpecialPage
                         $mainTitle = $title;
                     }
 
-                    $revision = Revision::newFromTitle($title);
-                    preg_match('#/\*(.*)\*/#', $revision->getComment(), $matches);
+                    $revision = MediaWikiServices::getInstance()->getRevisionLookup()->getRevisionByTitle($title);
+                    preg_match('#/\*(.*)\*/#', $revision->getComment()->text, $matches);
                     if (isset($matches[1])) {
                         $sectionName = str_replace(
                             '[', '<sup>',
