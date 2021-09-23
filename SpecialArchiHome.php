@@ -530,7 +530,7 @@ class SpecialArchiHome extends SpecialPage
                     }
 
                     $date = new DateTime($change['timestamp']);
-                    $output->addWikiTextAsContent("''" . strftime('%x', $date->getTimestamp()) . "''");
+                    $output->addWikiTextAsContent("''" . $date->format('d/m/Y') . "''");
 
                     $output->addHTML('<p>' . $extract . '</p>');
                     $wikitext = '[[' . $title->getFullText() . '|' . wfMessage('readthis')->parse() . ']]';
@@ -587,7 +587,7 @@ class SpecialArchiHome extends SpecialPage
                 $output->addHTML('<div class="latest-comments-recent-comment">');
                 $output->addWikiTextAsContent('=== ' . preg_replace('/\(.*\)/', '', $title->getBaseText()) . ' ===' . PHP_EOL);
                 $output->addHTML($this->getCategoryTree($title));
-                $output->addWikiTextAsContent('Par [[Utilisateur:' . $user->getName() . '|' . $user->getName() . ']] le ' . strftime('%x', $date->getTimestamp()));
+                $output->addWikiTextAsContent('Par [[Utilisateur:' . $user->getName() . '|' . $user->getName() . ']] le ' . $date->format('d/m/Y'));
                 $wikitext = "''" . strtok(wordwrap($row->Comment_Text, 170, '…' . PHP_EOL), PHP_EOL) . "''" . PHP_EOL . PHP_EOL .
                     '[[' . $title->getFullText() . '#comment-' . $row->CommentID . '|' . wfMessage('readthiscomment')->parse() . ']]';
                 $output->addWikiTextAsInterface($wikitext);
