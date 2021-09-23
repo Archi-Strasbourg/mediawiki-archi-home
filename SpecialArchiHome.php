@@ -100,7 +100,7 @@ class SpecialArchiHome extends SpecialPage
             $return .= Linker::link($catTitle, htmlspecialchars($catTitle->getText()));
             if (isset($categories[1])) {
                 $catTitle = Title::newFromText($categories[1]);
-                $return .= ' > '. Linker::link($catTitle, htmlspecialchars($catTitle->getText()));
+                $return .= ' > ' . Linker::link($catTitle, htmlspecialchars($catTitle->getText()));
             }
         }
 
@@ -122,34 +122,34 @@ class SpecialArchiHome extends SpecialPage
             // Start header row
             $output->addHTML('<div class="header-row">');
             $output->addHTML('<div class="spotlight-container"><div class="spotlight-on"><header class="spotlight-header">');
-            $wikitext = '=='.wfMessage('featured')->parse().'=='.PHP_EOL;
+            $wikitext = '==' . wfMessage('featured')->parse() . '==' . PHP_EOL;
             $id = $title->getArticleID();
             if (isset($id) && $id > 0) {
                 $extracts = $this->apiRequest(
                     [
-                    'action'          => 'query',
-                    'prop'            => 'extracts',
-                    'titles'          => $title->getFullText(),
-                    'explaintext'     => true,
-                    'exchars'         => 120,
-                    'exsectionformat' => 'plain',
-                    'exlimit'         => 1,
+                        'action' => 'query',
+                        'prop' => 'extracts',
+                        'titles' => $title->getFullText(),
+                        'explaintext' => true,
+                        'exchars' => 120,
+                        'exsectionformat' => 'plain',
+                        'exlimit' => 1,
                     ]
                 );
                 $images = $this->apiRequest(
                     [
-                    'action'           => 'ask',
-                    'query'            => '[['.$title.']]|?Image principale',
+                        'action' => 'ask',
+                        'query' => '[[' . $title . ']]|?Image principale',
                     ]
                 );
 
-                $wikitext .= '=== '.preg_replace('/\(.*\)/', '', $title->getText()).' ==='.PHP_EOL;
+                $wikitext .= '=== ' . preg_replace('/\(.*\)/', '', $title->getText()) . ' ===' . PHP_EOL;
                 $output->addWikiTextAsContent($wikitext);
-                $output->addHTML('<div class="breadcrumb">'.$this->getCategoryTree($title).'</div>');
+                $output->addHTML('<div class="breadcrumb">' . $this->getCategoryTree($title) . '</div>');
                 $output->addHTML('</header><div class="spotlight-content">');
                 $wikitext = '';
-                if (isset($images['query']['results'][(string) $title]) && isset($images['query']['results'][(string) $title]['printouts']['Image principale'][0])) {
-                    $wikitext .= '[['.$images['query']['results'][(string) $title]['printouts']['Image principale'][0]['fulltext'].'|thumb|left|100px]]';
+                if (isset($images['query']['results'][(string)$title]) && isset($images['query']['results'][(string)$title]['printouts']['Image principale'][0])) {
+                    $wikitext .= '[[' . $images['query']['results'][(string)$title]['printouts']['Image principale'][0]['fulltext'] . '|thumb|left|100px]]';
                 }
                 if (isset($extracts['query']['pages'][$id])) {
                     $wikitext .= PHP_EOL . $extracts['query']['pages'][$id]['extract']['*'] . PHP_EOL . PHP_EOL .
@@ -178,7 +178,7 @@ class SpecialArchiHome extends SpecialPage
                             <div class="column">'
         );
         $output->addWikiTextAsInterface(
-            '<h3 class="text-center search-title">'.wfMessage('searchdesc', '{{PAGESINNAMESPACE:'.NS_ADDRESS.'}}', '{{PAGESINNAMESPACE:6}}')->parse().'</h3>'
+            '<h3 class="text-center search-title">' . wfMessage('searchdesc', '{{PAGESINNAMESPACE:' . NS_ADDRESS . '}}', '{{PAGESINNAMESPACE:6}}')->parse() . '</h3>'
         );
         $output->addHTML(
             '</div>
@@ -187,9 +187,9 @@ class SpecialArchiHome extends SpecialPage
         $output->addHTML(
             '<div class="row">
                 <div class="column large-7 large-offset-2">
-                    <form id="searchform" action="'.$wgScript.'">
+                    <form id="searchform" action="' . $wgScript . '">
                         <div class="input-group">
-                            <input type="search" class="mw-searchInput search-input input-group-field" placeholder="'.wfMessage('search-placeholder')->parse().'" name="search">
+                            <input type="search" class="mw-searchInput search-input input-group-field" placeholder="' . wfMessage('search-placeholder')->parse() . '" name="search">
                             <input type="hidden" name="title" value="Spécial:Recherche">
                             <div class="input-group-button">
                                 <a class="button form-submit">
@@ -203,10 +203,10 @@ class SpecialArchiHome extends SpecialPage
         );
 
         $output->addWikiTextAsInterface(
-            '{{#queryformlink:form=Recherche avancée|link text='.wfMessage('advancedsearch')->parse().'}}'.
-            '<br/>'.
-            '[[Carte globale|Recherche cartographique]]'.
-            '<br/>'.
+            '{{#queryformlink:form=Recherche avancée|link text=' . wfMessage('advancedsearch')->parse() . '}}' .
+            '<br/>' .
+            '[[Carte globale|Recherche cartographique]]' .
+            '<br/>' .
             '[[Spécial:Nearby|À proximité]]'
         );
         $output->addHTML(
@@ -254,35 +254,35 @@ class SpecialArchiHome extends SpecialPage
         $output = $this->getOutput();
         $news = $this->apiRequest(
             [
-                'action'      => 'query',
-                'list'        => 'recentchanges',
+                'action' => 'query',
+                'list' => 'recentchanges',
                 'rcnamespace' => NS_NEWS,
-                'rclimit'     => 1,
+                'rclimit' => 1,
             ]
         );
         if (isset($news['query']['recentchanges'][0])) {
             $title = Title::newFromText($news['query']['recentchanges'][0]['title']);
             $extracts = $this->apiRequest(
                 [
-                'action'          => 'query',
-                'prop'            => 'extracts|pageimages',
-                'titles'          => $news['query']['recentchanges'][0]['title'],
-                'explaintext'     => true,
-                'exintro'         => true,
-                'exchars'         => 250,
-                'exsectionformat' => 'plain',
+                    'action' => 'query',
+                    'prop' => 'extracts|pageimages',
+                    'titles' => $news['query']['recentchanges'][0]['title'],
+                    'explaintext' => true,
+                    'exintro' => true,
+                    'exchars' => 250,
+                    'exsectionformat' => 'plain',
                 ]
             );
 
-            $wikitext = '== '.wfMessage('lastblog')->parse().'<br/>'.$title->getText().' =='.PHP_EOL;
+            $wikitext = '== ' . wfMessage('lastblog')->parse() . '<br/>' . $title->getText() . ' ==' . PHP_EOL;
             $wikitext .= '<div class="content-row">';
             if (isset($extracts['query']['pages'][$title->getArticleID()]['pageimage'])) {
-                $wikitext .= '[[File:'.$extracts['query']['pages'][$title->getArticleID()]['pageimage'].
-                '|thumb|left|300px]]';
+                $wikitext .= '[[File:' . $extracts['query']['pages'][$title->getArticleID()]['pageimage'] .
+                    '|thumb|left|300px]]';
             }
-            $wikitext .= '<div class="latest-news-text">'.$extracts['query']['pages'][$title->getArticleID()]['extract']['*'].PHP_EOL.PHP_EOL.
-                '[['.$title->getFullText().'|'.wfMessage('readmore')->parse().']]'.PHP_EOL.PHP_EOL.
-                '[[Special:ArchiBlog|'.wfMessage('othernews')->parse().']]'.'</div>';
+            $wikitext .= '<div class="latest-news-text">' . $extracts['query']['pages'][$title->getArticleID()]['extract']['*'] . PHP_EOL . PHP_EOL .
+                '[[' . $title->getFullText() . '|' . wfMessage('readmore')->parse() . ']]' . PHP_EOL . PHP_EOL .
+                '[[Special:ArchiBlog|' . wfMessage('othernews')->parse() . ']]' . '</div>';
             $wikitext .= '</div>';
             $output->addHTML('<div class="latest-news-holder">');
             $output->addHTML('<section class="latest-news" data-equalizer-watch>');
@@ -344,7 +344,8 @@ class SpecialArchiHome extends SpecialPage
      * @return mixed|string
      * @throws ConfigException
      */
-    private function getExtract(Title $title, $section) {
+    private function getExtract(Title $title, $section)
+    {
         global $wgMemc;
 
         $id = $title->getArticleID();
@@ -386,7 +387,7 @@ class SpecialArchiHome extends SpecialPage
         $output->addHTML('<section class="latest-changes">');
 
         $output->addWikiTextAsInterface(
-            '== '.wfMessage('recentcontributions')->parse().' =='
+            '== ' . wfMessage('recentcontributions')->parse() . ' =='
         );
 
         $addresses = $this->apiRequest(
@@ -509,37 +510,37 @@ class SpecialArchiHome extends SpecialPage
 
                     $properties = $this->apiRequest(
                         [
-                        'action'           => 'ask',
-                        'query'            => '[['.$mainTitle.']]|?Image principale|?Adresse complète',
+                            'action' => 'ask',
+                            'query' => '[[' . $mainTitle . ']]|?Image principale|?Adresse complète',
                         ]
                     );
 
                     $output->addHTML('<article class="latest-changes-recent-change-container">');
                     $output->addHTML('<article class="latest-changes-recent-change">');
-                    $wikitext = '=== '.preg_replace('/\(.*\)/', '', $title->getBaseText()).' ==='.PHP_EOL;
+                    $wikitext = '=== ' . preg_replace('/\(.*\)/', '', $title->getBaseText()) . ' ===' . PHP_EOL;
                     $output->addWikiTextAsContent($wikitext);
-                    if (isset($properties['query']['results'][(string) $mainTitle]) && !empty($properties['query']['results'][(string) $mainTitle]['printouts']['Adresse complète'])) {
-                        $output->addWikiTextAsContent($properties['query']['results'][(string) $mainTitle]['printouts']['Adresse complète'][0]['fulltext']);
+                    if (isset($properties['query']['results'][(string)$mainTitle]) && !empty($properties['query']['results'][(string)$mainTitle]['printouts']['Adresse complète'])) {
+                        $output->addWikiTextAsContent($properties['query']['results'][(string)$mainTitle]['printouts']['Adresse complète'][0]['fulltext']);
                     }
                     $output->addHTML($this->getCategoryTree($mainTitle));
 
-                    if (isset($properties['query']['results'][(string) $mainTitle]) && !empty($properties['query']['results'][(string) $mainTitle]['printouts']['Image principale'])) {
-                        $output->addWikiTextAsContent('[['.$properties['query']['results'][(string) $mainTitle]['printouts']['Image principale'][0]['fulltext'].
+                    if (isset($properties['query']['results'][(string)$mainTitle]) && !empty($properties['query']['results'][(string)$mainTitle]['printouts']['Image principale'])) {
+                        $output->addWikiTextAsContent('[[' . $properties['query']['results'][(string)$mainTitle]['printouts']['Image principale'][0]['fulltext'] .
                             '|thumb|left|100px]]');
                     }
 
                     $date = new DateTime($change['timestamp']);
-                    $output->addWikiTextAsContent("''".strftime('%x', $date->getTimestamp())."''");
+                    $output->addWikiTextAsContent("''" . strftime('%x', $date->getTimestamp()) . "''");
 
-                    $output->addHTML('<p>'.$extract.'</p>');
-                    $wikitext ='[['.$title->getFullText().'|'.wfMessage('readthis')->parse().']]';
+                    $output->addHTML('<p>' . $extract . '</p>');
+                    $wikitext = '[[' . $title->getFullText() . '|' . wfMessage('readthis')->parse() . ']]';
                     $wikitext = str_replace("\t\t\n", '', $wikitext);
                     $output->addWikiTextAsInterface($wikitext);
                     $output->addHTML('<div style="clear:both;"></div></article></article>');
                 }
             }
         }
-        $output->addWikiTextAsInterface('[[Special:Modifications récentes|'.wfMessage('allrecentchanges')->parse().']]');
+        $output->addWikiTextAsInterface('[[Special:Modifications récentes|' . wfMessage('allrecentchanges')->parse() . ']]');
         $output->addHTML('</section></div>');
     }
 
@@ -552,7 +553,7 @@ class SpecialArchiHome extends SpecialPage
         $output->addHTML('<div class="latest-comments-container">');
         $output->addHTML('<section class="latest-comments">');
         $output->addWikiTextAsInterface(
-            '== '.wfMessage('recentcomments')->parse().' =='
+            '== ' . wfMessage('recentcomments')->parse() . ' =='
         );
 
         $dbr = wfGetDB(DB_REPLICA);
@@ -584,11 +585,11 @@ class SpecialArchiHome extends SpecialPage
                 $date = new DateTime($row->Comment_Date);
                 $output->addHTML('<div class="latest-comments-recent-comment-container">');
                 $output->addHTML('<div class="latest-comments-recent-comment">');
-                $output->addWikiTextAsContent('=== '.preg_replace('/\(.*\)/', '', $title->getBaseText()).' ==='.PHP_EOL);
+                $output->addWikiTextAsContent('=== ' . preg_replace('/\(.*\)/', '', $title->getBaseText()) . ' ===' . PHP_EOL);
                 $output->addHTML($this->getCategoryTree($title));
-                $output->addWikiTextAsContent('Par [[Utilisateur:'.$user->getName().'|'.$user->getName().']] le '.strftime('%x', $date->getTimestamp()));
-                $wikitext = "''".strtok(wordwrap($row->Comment_Text, 170, '…'.PHP_EOL), PHP_EOL)."''".PHP_EOL.PHP_EOL.
-                    '[['.$title->getFullText().'#comment-'.$row->CommentID.'|'.wfMessage('readthiscomment')->parse().']]';
+                $output->addWikiTextAsContent('Par [[Utilisateur:' . $user->getName() . '|' . $user->getName() . ']] le ' . strftime('%x', $date->getTimestamp()));
+                $wikitext = "''" . strtok(wordwrap($row->Comment_Text, 170, '…' . PHP_EOL), PHP_EOL) . "''" . PHP_EOL . PHP_EOL .
+                    '[[' . $title->getFullText() . '#comment-' . $row->CommentID . '|' . wfMessage('readthiscomment')->parse() . ']]';
                 $output->addWikiTextAsInterface($wikitext);
                 $output->addHTML('<div style="clear:both;"></div>');
                 $output->addHTML('</div></div>');
