@@ -207,7 +207,7 @@ class SpecialArchiHome extends SpecialPage
             '<br/>' .
             '[[Carte globale|Recherche cartographique]]' .
             '<br/>' .
-            '[[Spécial:Nearby|À proximité]]'
+            '<span class="link--nearby">[[Spécial:Nearby|À proximité]]</span>'
         );
         $output->addHTML(
             '
