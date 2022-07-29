@@ -203,9 +203,9 @@ class SpecialArchiHome extends SpecialPage
         );
 
         $output->addWikiTextAsInterface(
-            '{{#queryformlink:form=Recherche avancée|link text=' . wfMessage('advancedsearch')->parse() . '}}' .
+            '{{#querycacheformlink:form=Recherche avancée|link text=' . wfMessage('advancedsearch')->parse() . '}}' .
             '<br/>' .
-            '{{#queryformlink:form=Recherche avancée|link text=Recherche cartographique|pfRunQueryFormName=Recherche avancée|Recherche avancée[carte][value]=1|Recherche avancée[carte][is_checkbox]=true}}' .
+            '{{#querycacheformlink:form=Recherche avancée|link text=Recherche cartographique|pfRunQueryFormName=Recherche avancée|Recherche avancée[carte][value]=1|Recherche avancée[carte][is_checkbox]=true}}' .
             '<br/>' .
             '<span class="link--nearby">[[Spécial:Nearby|À proximité]]</span>'
         );
