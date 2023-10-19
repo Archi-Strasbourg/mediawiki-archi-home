@@ -17,6 +17,9 @@ use MediaWiki\MediaWikiServices;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Revision\SlotRecord;
 use MWException;
+use ObjectCache;
+use RequestContext;
+use SMW\Services\ServicesFactory as ApplicationFactory;
 use SpecialPage;
 use TextExtracts\TextTruncator;
 use Title;
@@ -346,12 +349,12 @@ class SpecialArchiHome extends SpecialPage
      */
     private function getExtract(Title $title, $section)
     {
-        global $wgMemc;
+        $cache = ObjectCache::getLocalClusterInstance();
 
         $id = $title->getArticleID();
 
-        $key = wfMemcKey('archidescription', $id, $section, $title->getTouched());
-        $result = $wgMemc->get($key);
+        $key = $cache->makeKey('archidescription', $id, $section, $title->getTouched());
+        $result = $cache->get($key);
 
         if (!$result) {
             // On refait manuellement ce que fait TextExtracts pour pouvoir le faire sur la section 1.
@@ -369,7 +372,7 @@ class SpecialArchiHome extends SpecialPage
                 $result = $this->convertText($extracts['parse']['text']);
             }
 
-            $wgMemc->set($key, $result);
+            $cache->set($key, $result);
         }
 
         return $result;
@@ -556,12 +559,13 @@ class SpecialArchiHome extends SpecialPage
             '== ' . wfMessage('recentcomments')->parse() . ' =='
         );
 
-        $dbr = wfGetDB(DB_REPLICA);
+        $dbr = MediaWikiServices::getInstance()
+            ->getDBLoadBalancer()->getConnection(DB_REPLICA);
         $res = $dbr->select(
             ['Comments', 'page'],
             ['CommentID', 'Comment_Page_ID', 'Comment_Date', 'Comment_Text', 'Comment_actor'],
             'page_id IS NOT NULL',
-            null,
+            __METHOD__,
             ['ORDER BY' => 'Comment_Date DESC'],
             [
                 'page' => [
@@ -621,9 +625,7 @@ class SpecialArchiHome extends SpecialPage
      */
     public function execute($subPage)
     {
-        global $wgCountryCategory, $wgTitle;
-        $article = new Article($wgTitle);
-        $this->languageCode = $article->getContext()->getLanguage()->getCode();
+        $this->languageCode = RequestContext::getMain()->getLanguage()->getCode();
 
         $output = $this->getOutput();
         $this->setHeaders();
