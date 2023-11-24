@@ -3,19 +3,18 @@
   "description": "Custom homepage for archi-wiki.org",
   "license": "GPL-3.0-only",
   "require": {
-    "mediawiki/textextracts": "~1.26"
-  },
-  "require-dev": {
-    "phpdocumentor/phpdocumentor": "~2.9.0"
-  },
-  "scripts": {
-    "doc": "./vendor/bin/phpdoc -f SpecialArchiHome.php -t docs"
+    "mediawiki/text-extracts": "dev-REL1_35"
   },
   "repositories": [
     {
       "type": "composer",
-      "url": "https://mwpackagist.netlib.re/"
+      "url": "https://packages.bluespice.com/"
     }
   ],
-  "type": "mediawiki-extension"
+  "type": "mediawiki-extension",
+  "config": {
+    "allow-plugins": {
+      "composer/installers": true
+    }
+  }
 }

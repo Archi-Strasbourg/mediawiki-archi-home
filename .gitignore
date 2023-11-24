@@ -1,3 +1,4 @@
 vendor/
 extensions/
 docs/
+composer.lock
