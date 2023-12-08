@@ -10,12 +10,14 @@ use Article;
 use CategoryBreadcrumb\CategoryBreadcrumb;
 use ContentHandler;
 use DateTime;
+use DerivativeContext;
 use DerivativeRequest;
 use Exception;
 use Linker;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Revision\SlotRecord;
+use MobileContext;
 use MWException;
 use ObjectCache;
 use RequestContext;
@@ -49,13 +51,26 @@ class SpecialArchiHome extends SpecialPage
      *
      * @return array
      */
-    private function apiRequest($options)
+    private function apiRequest(array $options): array
     {
         $params = new DerivativeRequest(
             $this->getRequest(),
             $options
         );
         $api = new ApiMain($params);
+
+        /** @var MobileContext $mobileContext */
+        $mobileContext = MediaWikiServices::getInstance()->getService('MobileFrontend.Context');
+
+        /*
+         * MobileFrontendHooks ne détecte pas qu'il est dans une sous-requête d'API
+         * et il injecte un JS au début du HTML.
+         * Pour éviter ça, on lui indique explicitement le contexte.
+         */
+        $context = new DerivativeContext($mobileContext->getContext());
+        $context->setRequest(new DerivativeRequest($context->getRequest(), $options));
+        $mobileContext->setContext($context);
+
         $api->execute();
 
         return $api->getResult()->getResultData();
