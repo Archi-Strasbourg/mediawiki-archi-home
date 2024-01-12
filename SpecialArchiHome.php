@@ -196,7 +196,14 @@ class SpecialArchiHome extends SpecialPage
                             <div class="column">'
         );
         $output->addWikiTextAsInterface(
-            '<h3 class="text-center search-title">' . wfMessage('searchdesc', '{{PAGESINNAMESPACE:' . NS_ADDRESS . '}}', '{{PAGESINNAMESPACE:6}}')->parse() . '</h3>'
+            '<h3 class="text-center search-title">' .
+            wfMessage(
+                'searchdesc',
+                '{{PAGESINNAMESPACE:' . NS_ADDRESS . '}}',
+                '{{PAGESINNAMESPACE:6}}',
+                '{{PAGESINNAMESPACE:' . NS_PERSON . '}}'
+            )->parse() .
+            '</h3>'
         );
         $output->addHTML(
             '</div>
@@ -215,8 +222,13 @@ class SpecialArchiHome extends SpecialPage
                                 </a>
                             </div>
                         </div>
-        			</form>
-                </div>
+                    </form>' .
+            MediaWikiServices::getInstance()->getLinkRenderer()->makeLink(
+                Title::newFromText('Special:Random'),
+                'Article au hasard !',
+                ['class' => 'link--random']
+            ) .
+            '</div>
                 <div class="column large-3 end">'
         );
 
