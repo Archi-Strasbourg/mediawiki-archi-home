@@ -264,12 +264,14 @@ class SpecialArchiHome extends SpecialPage
             [[Brève:+]]
             |?Date de publication#ISO
             |?URL
+            |?Titre actualité
             |format=ul
             |template=Affichage brève
             |link=none
             |sort=Date de publication
             |order=desc
             |limit=5
+            |searchlabel=
             }}
         ');
         $output->addWikiTextAsInterface("[[Fil d'actualité|" . wfMessage('allbriefs')->parse() . ']]');
