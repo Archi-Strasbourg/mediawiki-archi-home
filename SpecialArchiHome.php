@@ -216,6 +216,7 @@ class SpecialArchiHome extends SpecialPage
                         <div class="input-group">
                             <input type="search" class="mw-searchInput search-input input-group-field" placeholder="' . wfMessage('search-placeholder')->parse() . '" name="search">
                             <input type="hidden" name="title" value="Spécial:Recherche">
+                            <input type="hidden" name="profile" value="default">
                             <div class="input-group-button">
                                 <a class="button form-submit">
                                     <i class="material-icons">search</i>
@@ -263,12 +264,14 @@ class SpecialArchiHome extends SpecialPage
             [[Brève:+]]
             |?Date de publication#ISO
             |?URL
+            |?Titre actualité
             |format=ul
             |template=Affichage brève
             |link=none
             |sort=Date de publication
             |order=desc
             |limit=5
+            |searchlabel=
             }}
         ');
         $output->addWikiTextAsInterface("[[Fil d'actualité|" . wfMessage('allbriefs')->parse() . ']]');
