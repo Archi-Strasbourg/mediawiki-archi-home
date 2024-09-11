@@ -573,7 +573,7 @@ class SpecialArchiHome extends SpecialPage
                 }
             }
         }
-        $output->addWikiTextAsInterface('[[Special:Modifications récentes|' . wfMessage('allrecentchanges')->parse() . ']]');
+        $output->addWikiTextAsInterface('[[Special:ArchiRecentChanges|' . wfMessage('allrecentchanges')->parse() . ']]');
         $output->addHTML('</section></div>');
     }
 
