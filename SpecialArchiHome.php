@@ -415,6 +415,8 @@ class SpecialArchiHome extends SpecialPage
      */
     private function outputRecentChanges()
     {
+        global $wgDBname;
+
         $output = $this->getOutput();
         $output->addHTML('<div class="latest-changes-container">');
         $output->addHTML('<section class="latest-changes">');
@@ -506,13 +508,30 @@ class SpecialArchiHome extends SpecialPage
 
                     // On essaie d'avoir un extrait de la section modifiée.
                     if (!empty($sectionName)) {
-                        $sections = $this->apiRequest(
+                        $cache = ObjectCache::getInstance('redis');
+                        $cacheKey = implode(
+                            ':',
                             [
-                                'action' => 'parse',
-                                'page' => $change['title'],
-                                'prop' => 'sections',
+                                // On met en cache par révision.
+                                $wgDBname,
+                                'archi-home',
+                                'parse-section',
+                                $revision->getId()
                             ]
                         );
+                        $sections = $cache->get($cacheKey);
+
+                        if ($sections === FALSE) {
+                            $sections = $this->apiRequest(
+                                [
+                                    'action' => 'parse',
+                                    'page' => $change['title'],
+                                    'prop' => 'sections',
+                                ]
+                            );
+                            // Cet appel est couteux donc on met le résultat en cache.
+                            $cache->set($cacheKey, $sections, $cache::TTL_YEAR);
+                        }
 
                         foreach ($sections['parse']['sections'] as $section) {
                             if (isset($section['line']) && $section['line'] == $sectionName) {
