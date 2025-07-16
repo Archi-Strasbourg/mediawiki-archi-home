@@ -89,10 +89,13 @@ class SpecialArchiHome extends SpecialPage
         $title = Title::newFromText($title);
         $revision = MediaWikiServices::getInstance()->getRevisionLookup()->getRevisionById($title->getLatestRevID());
         if (isset($revision)) {
-            return ContentHandler::getContentText($revision->getContent(SlotRecord::MAIN, RevisionRecord::RAW));
-        } else {
-            return '';
+            $content = $revision->getContent(SlotRecord::MAIN, RevisionRecord::RAW);
+            if ($content instanceof \TextContent) {
+                return $content->getText();
+            }
         }
+
+        return '';
     }
 
     /**
