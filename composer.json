@@ -3,7 +3,7 @@
   "description": "Custom homepage for archi-wiki.org",
   "license": "GPL-3.0-only",
   "require": {
-    "mediawiki/text-extracts": "dev-REL1_35"
+    "mediawiki/text-extracts": "*@dev"
   },
   "repositories": [
     {
