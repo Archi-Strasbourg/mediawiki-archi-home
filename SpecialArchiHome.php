@@ -160,7 +160,7 @@ class SpecialArchiHome extends SpecialPage
                 $images = $this->apiRequest(
                     [
                         'action' => 'ask',
-                        'query' => '[[' . $title . ']]|?Image principale',
+                        'query' => '[[' . $title . ']]|?Image principale texte',
                     ]
                 );
 
@@ -169,8 +169,8 @@ class SpecialArchiHome extends SpecialPage
                 $output->addHTML('<div class="breadcrumb">' . $this->getCategoryTree($title) . '</div>');
                 $output->addHTML('</header><div class="spotlight-content">');
                 $wikitext = '';
-                if (isset($images['query']['results'][(string)$title]) && isset($images['query']['results'][(string)$title]['printouts']['Image principale'][0])) {
-                    $wikitext .= '[[' . $images['query']['results'][(string)$title]['printouts']['Image principale'][0]['fulltext'] . '|thumb|left|100px]]';
+                if (isset($images['query']['results'][(string)$title]) && isset($images['query']['results'][(string)$title]['printouts']['Image principale texte'][0])) {
+                    $wikitext .= '[[' . $images['query']['results'][(string)$title]['printouts']['Image principale texte'][0] . '|thumb|left|100px]]';
                 }
                 if (isset($extracts['query']['pages'][$id])) {
                     $wikitext .= PHP_EOL . $extracts['query']['pages'][$id]['extract']['*'] . PHP_EOL . PHP_EOL .
@@ -566,7 +566,7 @@ class SpecialArchiHome extends SpecialPage
                     $properties = $this->apiRequest(
                         [
                             'action' => 'ask',
-                            'query' => '[[' . $mainTitle . ']]|?Image principale|?Adresse complète',
+                            'query' => '[[' . $mainTitle . ']]|?Image principale texte|?Adresse complète',
                         ]
                     );
 
@@ -579,8 +579,8 @@ class SpecialArchiHome extends SpecialPage
                     }
                     $output->addHTML($this->getCategoryTree($mainTitle));
 
-                    if (isset($properties['query']['results'][(string)$mainTitle]) && !empty($properties['query']['results'][(string)$mainTitle]['printouts']['Image principale'])) {
-                        $output->addWikiTextAsContent('[[' . $properties['query']['results'][(string)$mainTitle]['printouts']['Image principale'][0]['fulltext'] .
+                    if (isset($properties['query']['results'][(string)$mainTitle]) && !empty($properties['query']['results'][(string)$mainTitle]['printouts']['Image principale texte'])) {
+                        $output->addWikiTextAsContent('[[' . $properties['query']['results'][(string)$mainTitle]['printouts']['Image principale texte'][0] .
                             '|thumb|left|100px]]');
                     }
 
