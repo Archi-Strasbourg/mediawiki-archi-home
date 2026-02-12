@@ -310,17 +310,19 @@ class SpecialArchiHome extends SpecialPage
                 ]
             );
 
-            $wikitext = '== ' . wfMessage('lastblog')->parse() . '<br/>' . $title->getText() . ' ==' . PHP_EOL;
+            if ($title->getNamespace() == NS_NEWS) {
+                $titlePrefix = wfMessage('lastblog')->parse();
+                $otherText = wfMessage('othernews')->parse();
+            }
+            else {
+                $titlePrefix = 'Article&nbsp;:';
+                $otherText = 'Découvrir les autres articles';
+            }
+            $wikitext = '== ' . $titlePrefix . '<br/>' . $title->getText() . ' ==' . PHP_EOL;
             $wikitext .= '<div class="content-row">';
             if (isset($extracts['query']['pages'][$title->getArticleID()]['pageimage'])) {
                 $wikitext .= '[[File:' . $extracts['query']['pages'][$title->getArticleID()]['pageimage'] .
                     '|thumb|left|300px]]';
-            }
-            if ($title->getNamespace() == NS_NEWS) {
-                $otherText = wfMessage('othernews')->parse();
-            }
-            else {
-                $otherText = 'Découvrir les autres articles';
             }
             $wikitext .= '<div class="latest-news-text">' . $extracts['query']['pages'][$title->getArticleID()]['extract']['*'] . PHP_EOL . PHP_EOL .
                 '[[' . $title->getFullText() . '|' . wfMessage('readmore')->parse() . ']]' . PHP_EOL . PHP_EOL .
