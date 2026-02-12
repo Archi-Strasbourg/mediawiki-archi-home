@@ -292,7 +292,7 @@ class SpecialArchiHome extends SpecialPage
             [
                 'action' => 'query',
                 'list' => 'recentchanges',
-                'rcnamespace' => NS_NEWS,
+                'rcnamespace' => implode('|', [NS_NEWS, NS_ARTICLE]),
                 'rclimit' => 1,
             ]
         );
@@ -316,9 +316,15 @@ class SpecialArchiHome extends SpecialPage
                 $wikitext .= '[[File:' . $extracts['query']['pages'][$title->getArticleID()]['pageimage'] .
                     '|thumb|left|300px]]';
             }
+            if ($title->getNamespace() == NS_NEWS) {
+                $otherText = wfMessage('othernews')->parse();
+            }
+            else {
+                $otherText = 'Découvrir les autres articles';
+            }
             $wikitext .= '<div class="latest-news-text">' . $extracts['query']['pages'][$title->getArticleID()]['extract']['*'] . PHP_EOL . PHP_EOL .
                 '[[' . $title->getFullText() . '|' . wfMessage('readmore')->parse() . ']]' . PHP_EOL . PHP_EOL .
-                '[[Special:ArchiBlog|' . wfMessage('othernews')->parse() . ']]' . '</div>';
+                '[[Special:ArchiBlog|' . $otherText . ']]' . '</div>';
             $wikitext .= '</div>';
             $output->addHTML('<div class="latest-news-holder">');
             $output->addHTML('<section class="latest-news" data-equalizer-watch>');
