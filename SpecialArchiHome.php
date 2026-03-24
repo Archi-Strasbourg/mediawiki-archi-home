@@ -10,6 +10,7 @@ use Article;
 use CategoryBreadcrumb\CategoryBreadcrumb;
 use ContentHandler;
 use DateTime;
+use DateTimeInterface;
 use DerivativeContext;
 use DerivativeRequest;
 use Exception;
@@ -263,20 +264,33 @@ class SpecialArchiHome extends SpecialPage
         $output->addHTML('<div class="archiwiki-intro-holder">');
         $output->addHTML('<section class="archiwiki-intro" data-equalizer-watch>');
         $output->addWikiTextAsInterface("== Fil d'actualité ==");
-        $output->addWikiTextAsContent('{{#ask:
-            [[Brève:+]]
-            |?Date de publication#ISO
-            |?URL
-            |?Titre actualité
-            |format=ul
-            |template=Affichage brève
-            |link=none
-            |sort=Date de publication
-            |order=desc
-            |limit=5
-            |searchlabel=
-            }}
-        ');
+        $results = $this->apiRequest(
+            [
+                'action' => 'ask',
+                'query' => '[[Brève:+]]
+                    |?Date de publication#ISO
+                    |?URL
+                    |?Titre actualité
+                    |format=ul
+                    |template=Affichage brève
+                    |link=none
+                    |sort=Date de publication
+                    |order=desc
+                    |limit=5
+                    |searchlabel=',
+            ]
+        );
+        foreach ($results['query']['results'] as $result) {
+            $date = DateTime::createFromFormat('U', $result['printouts']['Date de publication'][0]['timestamp']);
+            $output->addWikiTextAsContent(
+                '* {{Affichage brève|' . $result['fulltext'] .
+                '|' . $date->format(DateTimeInterface::ISO8601) .
+                '|' . $result['printouts']['URL'][0] .
+                '|' . $result['printouts']['Titre actualité'][0] .
+                '}}'
+            );
+        }
+
         $output->addWikiTextAsInterface("[[Fil d'actualité|" . wfMessage('allbriefs')->parse() . ']]');
         $output->addHTML('<div style="clear:both;"></div>');
         $output->addHTML('</section></div>');
