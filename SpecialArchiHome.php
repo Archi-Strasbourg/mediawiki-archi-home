@@ -6,9 +6,7 @@
 namespace ArchiHome;
 
 use ApiMain;
-use Article;
 use CategoryBreadcrumb\CategoryBreadcrumb;
-use ContentHandler;
 use DateTime;
 use DateTimeInterface;
 use DerivativeContext;
@@ -19,11 +17,10 @@ use MediaWiki\MediaWikiServices;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Revision\SlotRecord;
 use MobileContext;
-use MWException;
 use ObjectCache;
 use RequestContext;
-use SMW\Services\ServicesFactory as ApplicationFactory;
 use SpecialPage;
+use TextContent;
 use TextExtracts\TextTruncator;
 use Title;
 use TextExtracts\ExtractFormatter;
@@ -35,7 +32,7 @@ use User;
  */
 class SpecialArchiHome extends SpecialPage
 {
-    private $languageCode;
+    private string $languageCode;
 
     /**
      * SpecialArchiHome constructor.
@@ -83,7 +80,6 @@ class SpecialArchiHome extends SpecialPage
      * @param string $title Article title
      *
      * @return string
-     * @throws MWException
      */
     private function getTextFromArticle(string $title): string
     {
@@ -91,7 +87,7 @@ class SpecialArchiHome extends SpecialPage
         $revision = MediaWikiServices::getInstance()->getRevisionLookup()->getRevisionById($title->getLatestRevID());
         if (isset($revision)) {
             $content = $revision->getContent(SlotRecord::MAIN, RevisionRecord::RAW);
-            if ($content instanceof \TextContent) {
+            if ($content instanceof TextContent) {
                 return $content->getText();
             }
         }
@@ -106,8 +102,7 @@ class SpecialArchiHome extends SpecialPage
      *
      * @return string Category tree
      */
-    public static function getCategoryTree(Title $title)
-    {
+    public static function getCategoryTree(Title $title): string {
         if ($title->getNamespace() == NS_ADDRESS_NEWS) {
             $title = Title::newFromText($title->getText(), NS_ADDRESS);
         }
@@ -130,10 +125,9 @@ class SpecialArchiHome extends SpecialPage
     }
 
     /**
-     * @throws MWException
+     * @return void
      */
-    private function outputFocus()
-    {
+    private function outputFocus(): void {
         $output = $this->getOutput();
         $focus = $this->getTextFromArticle('MediaWiki:ArchiHome-focus');
         if (isset($focus)) {
@@ -186,10 +180,9 @@ class SpecialArchiHome extends SpecialPage
     }
 
     /**
-     * @throws MWException
+     * @return void
      */
-    private function outputSearch()
-    {
+    private function outputSearch(): void {
         global $wgScript;
         $output = $this->getOutput();
         $output->addHTML(
@@ -255,10 +248,9 @@ class SpecialArchiHome extends SpecialPage
     }
 
     /**
-     * @throws MWException
+     * @return void
      */
-    private function outputBriefs()
-    {
+    private function outputBriefs(): void {
         $output = $this->getOutput();
 
         $output->addHTML('<div class="archiwiki-intro-holder">');
@@ -284,7 +276,7 @@ class SpecialArchiHome extends SpecialPage
             $date = DateTime::createFromFormat('U', $result['printouts']['Date de publication'][0]['timestamp']);
             $output->addWikiTextAsContent(
                 '* {{Affichage brève|' . $result['fulltext'] .
-                '|' . $date->format(DateTimeInterface::ISO8601) .
+                '|' . $date->format(DateTimeInterface::ATOM) .
                 '|' . $result['printouts']['URL'][0] .
                 '|' . $result['printouts']['Titre actualité'][0] .
                 '}}'
@@ -297,10 +289,9 @@ class SpecialArchiHome extends SpecialPage
     }
 
     /**
-     * @throws MWException
+     * @return void
      */
-    private function outputNews()
-    {
+    private function outputNews(): void {
         $output = $this->getOutput();
         $news = $this->apiRequest(
             [
@@ -356,8 +347,7 @@ class SpecialArchiHome extends SpecialPage
      * @return int
      * @throws Exception
      */
-    private function sortChanges($a, $b)
-    {
+    private function sortChanges($a, $b): int {
         $dateA = new DateTime($a['timestamp']);
         $dateB = new DateTime($b['timestamp']);
 
@@ -402,8 +392,7 @@ class SpecialArchiHome extends SpecialPage
      * @return mixed|string
      * @throws ConfigException
      */
-    private function getExtract(Title $title, $section)
-    {
+    private function getExtract(Title $title, $section): mixed {
         $cache = ObjectCache::getLocalClusterInstance();
 
         $id = $title->getArticleID();
@@ -435,11 +424,9 @@ class SpecialArchiHome extends SpecialPage
 
     /**
      * @throws ConfigException
-     * @throws MWException
      * @throws Exception
      */
-    private function outputRecentChanges()
-    {
+    private function outputRecentChanges(): void {
         global $wgDBname;
 
         $output = $this->getOutput();
@@ -471,7 +458,7 @@ class SpecialArchiHome extends SpecialPage
             ]
         );
         foreach ($addresses['query']['recentchanges'] as &$address) {
-            foreach ($news['query']['recentchanges'] as &$article) {
+            foreach ($news['query']['recentchanges'] as $article) {
                 if (isset($address['title']) && isset($article['title'])) {
                     $addressTitle = Title::newFromText($address['title']);
                     $articleTitle = Title::newFromText($article['title']);
@@ -622,10 +609,10 @@ class SpecialArchiHome extends SpecialPage
     }
 
     /**
-     * @throws MWException
+     * @return void
+     * @throws Exception
      */
-    private function outputRecentComments()
-    {
+    private function outputRecentComments(): void {
         $output = $this->getOutput();
         $output->addHTML('<div class="latest-comments-container">');
         $output->addHTML('<section class="latest-comments">');
@@ -684,8 +671,7 @@ class SpecialArchiHome extends SpecialPage
      *
      * @return string
      */
-    protected function getRobotPolicy()
-    {
+    protected function getRobotPolicy(): string {
         return 'index,follow';
     }
 
@@ -695,10 +681,10 @@ class SpecialArchiHome extends SpecialPage
      * @param string $subPage
      *
      * @return void
-     * @throws MWException
+     * @throws Exception
+     * @throws Exception
      */
-    public function execute($subPage)
-    {
+    public function execute($subPage): void {
         $this->languageCode = RequestContext::getMain()->getLanguage()->getCode();
 
         $output = $this->getOutput();
@@ -736,8 +722,7 @@ class SpecialArchiHome extends SpecialPage
      *
      * @return string
      */
-    public function getGroupName()
-    {
+    public function getGroupName(): string {
         return 'pages';
     }
 }
